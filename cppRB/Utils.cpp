@@ -16,49 +16,40 @@ std::string Utils::getCurrentTime()
 
 void Utils::createLogFile()
 { 
-	this->logFile.open(this->logFilePath + "_" + 
-    getCurrentTime() + "_RB_LOG_FILE.txt", std::ios_base::app);
+    this->logFilePath = this->logFilePath + "_" + 
+    getCurrentTime() + "_RB_LOG_FILE.txt";
+	this->logFile.open(this->logFilePath, std::ios_base::app);
+    std::cout<<"\n[INFO]: Random Benchmarking calculations started at: " + getCurrentTime() +  "\n\n"; 
     std::cout<<"[INFO]: Log file created \n"; 
-}
+};
+
+void Utils::closeResultFile()
+{ 
+	this->resultsFile.close();
+    saveLog("[INFO]: Results file closed");
+};
+
+void Utils::saveResult(std::string result)
+{
+    std::string currentTime = getCurrentTime();
+	this->resultsFile << "[" + currentTime + "] " + result << "\n";
+};
+
+void Utils::createResultFile()
+{ 
+	this->resultsFile.open(cfgParser.resultFilePath, std::ios_base::app);
+    saveLog("[INFO]: Results file created");
+};
 
 void Utils::closeLogFile()
 {
     std::cout<<"[INFO]: Log file closed \n"; 
+    std::cout<<"\n[INFO]: Random Benchmarking calculations ended at: " + getCurrentTime() +  "\n"; 
     this->logFile.close();
-}
+};
 
 void Utils::saveLog(std::string message)
 {
     std::string currentTime = getCurrentTime();
 	this->logFile << "[" + currentTime + "] " + message << "\n";
-};
-
-void Utils::parseConfigFile(std::string* params)
-{
-    char split_char = '=';
-    std::string line;
-    std::ifstream myfile("configFile.txt");
-    int i = 0;
-
-    if (myfile.is_open())
-    {
-        while(std::getline(myfile, line))
-        {
-            std::stringstream   linestream(line);
-            std::string         data;
-            std::string         val1;
-            int                 val2;
-            std::getline(linestream, data, split_char);  // read up-to the first tab (discard tab).
-            linestream >> val1;
-            if (!val1.empty())
-                *(params + i) = val1;
-            else
-                *(params + i) = "NO PARAM";
-            i++;
-        }
-        this->saveLog("[INFO]: Configuration params loaded successfully");
-        myfile.close();
-    }
-    else 
-        this->saveLog("[ERROR]: Unable to open configuration file");
 };

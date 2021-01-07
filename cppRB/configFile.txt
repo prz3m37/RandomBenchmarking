@@ -1,2 +1,2 @@
-results_path=./
+results_file_path=./
 number_of_Cliffod_gates=30

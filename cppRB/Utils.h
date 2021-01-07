@@ -5,21 +5,28 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include "ConfigParser.h"
 
 class Utils{
 
     public: 
         void createLogFile();
         void closeLogFile();
-        void parseConfigFile(std::string*);
-
+    
+    protected:
+        friend void saveLog(std::string);
+        void saveResult(std::string);
+        
     private:
-        std::string logFilePath = "./";
-        std::ofstream logFile;
+        ConfigParser cfgParser;
 
-        std::string getCurrentTime();
-        void saveLog(std::string);
+        std::string logFilePath;
+        std::ofstream logFile;
+        std::ofstream resultsFile;
+
         void createResultFile();
+        void closeResultFile();
+        friend void std::string getCurrentTime();
 };
 
 #endif /* UTILS_H */
