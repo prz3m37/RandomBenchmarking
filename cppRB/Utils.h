@@ -14,7 +14,7 @@ class Utils{
         void closeLogFile();
     
     protected:
-        friend void saveLog(std::string);
+        saveLog(std::string);
         void saveResult(std::string);
         
     private:
@@ -26,7 +26,7 @@ class Utils{
 
         void createResultFile();
         void closeResultFile();
-        friend void std::string getCurrentTime();
+        std::string getCurrentTime();
 };
 
 #endif /* UTILS_H */
