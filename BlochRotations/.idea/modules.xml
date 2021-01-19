@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pythonRB.iml" filepath="$PROJECT_DIR$/.idea/pythonRB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BlochRotations.iml" filepath="$PROJECT_DIR$/.idea/BlochRotations.iml" />
     </modules>
   </component>
 </project>

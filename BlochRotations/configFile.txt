@@ -1,0 +1,5 @@
+results_file_path=./
+rotation_axis=x
+magnetic_filed=1
+time_tc=1
+dg_factor=1

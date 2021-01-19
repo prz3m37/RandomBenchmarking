@@ -1,7 +1,6 @@
 from Utils import config_parser
-
+import settings
 import datetime
-import numpy as np
 
 
 class Utils:
@@ -22,12 +21,12 @@ class Utils:
     def initialize_utilities(cls):
         cls.cfg_parser = config_parser.ConfigParser
         cls.cfg_parser.get_params()
+        cls.cfg_parser.convert_data()
         cls.log_file = None
         cls.results_file = None
         cls.__result_file_path = cls.cfg_parser.params["results_file_path"]
         cls.__create_log_file()
         cls.__create_results_file()
-        cls.__convert_data()
         return
 
     @classmethod
@@ -38,8 +37,11 @@ class Utils:
 
     @classmethod
     def get_rotation_params(cls):
-        theta, phi = cls.cfg_parser.params["theta"], cls.cfg_parser.params["phi"]
-        return theta, phi
+        settings.settings["magnetic_filed"] = cls.cfg_parser.params["magnetic_filed"]
+        settings.settings["rotation_axis"] = cls.cfg_parser.params["rotation_axis"]
+        settings.settings["dg_factor"] = cls.cfg_parser.params["dg_factor"]
+        settings.settings["time_tc"] = cls.cfg_parser.params["time_tc"]
+        return
 
     @classmethod
     def save_log(cls, message: str):
@@ -56,17 +58,6 @@ class Utils:
     @staticmethod
     def __get_current_time():
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    @classmethod
-    def __convert_data(cls):
-        cls.save_log("[INFO]: Data converted")
-        cls.cfg_parser.params["theta"] = float(cls.cfg_parser.params["theta"])
-        cls.cfg_parser.params["phi"] = float(cls.cfg_parser.params["phi"])
-        cls.cfg_parser.params["init_vector"] = np.fromstring(cls.cfg_parser.params["init_vector"],
-                                                             dtype=int, sep=',')
-        cls.cfg_parser.params["final_vector"] = np.fromstring(cls.cfg_parser.params["final_vector"],
-                                                              dtype=int, sep=',')
-        return
 
     @classmethod
     def __create_results_file(cls):
