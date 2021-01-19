@@ -39,6 +39,7 @@ class Utils:
     def get_rotation_params(cls):
         settings.settings["magnetic_filed"] = cls.cfg_parser.params["magnetic_filed"]
         settings.settings["rotation_axis"] = cls.cfg_parser.params["rotation_axis"]
+        settings.settings["init_vector"] = cls.cfg_parser.params["init_vector"]
         settings.settings["dg_factor"] = cls.cfg_parser.params["dg_factor"]
         settings.settings["time_tc"] = cls.cfg_parser.params["time_tc"]
         return

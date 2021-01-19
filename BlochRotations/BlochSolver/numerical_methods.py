@@ -22,6 +22,18 @@ class NumericalMethods:
         return
 
     @classmethod
+    def __get_analytical_derivative(cls):
+        return
+
+    @classmethod
+    def __get_analytical_second_derivative(cls):
+        return
+
+    @classmethod
+    def __get_analytical_mixed_derivative(cls):
+        return
+
+    @classmethod
     def __get_analytical_gradient(cls):
         return
 

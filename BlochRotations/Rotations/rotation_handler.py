@@ -5,7 +5,6 @@ from Utils import settings as s
 # TODO: Maybe different instances will be needed for multiprocessing
 class RotationHandler:
     theta = None
-    init_vector = None
 
     @classmethod
     def __get_rotation_angle(cls, epsilon: float):
@@ -39,8 +38,8 @@ class RotationHandler:
 
     # TODO: Check if matmul stuff is ok to use
     @classmethod
-    def get_final_state(cls, alpha: float):
-        return np.matmul(cls.get_final_matrix(alpha), cls.init_vector)
+    def get_state(cls, rotation_matrix, init_state: np.array, **kwargs):
+        return np.matmul(rotation_matrix(**kwargs), init_state)
 
     @staticmethod
     def __get_x_rotation(alpha: float):
