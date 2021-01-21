@@ -23,8 +23,8 @@ class RotationHandler:
     @classmethod
     def get_pulse_rotation_matrix(cls, phi: float, epsilon: float):
         nx, ny, nz = cls.__get_rotation_vectors(epsilon)
-        rot_matrix = np.array([[np.cos(phi) + 1j * nz * np.sin(phi), (1j * nx + ny) * np.sin(phi)],
-                               [(1j * nx - ny) * np.sin(phi), np.cos(phi) - 1j * nz * np.sin(phi)]])
+        rot_matrix = np.array([[np.cos(phi/2) + 1j * nz * np.sin(phi/2), (1j * nx + ny) * np.sin(phi/2)],
+                               [(1j * nx - ny) * np.sin(phi/2), np.cos(phi/2) - 1j * nz * np.sin(phi/2)]])
         return rot_matrix
 
     @classmethod

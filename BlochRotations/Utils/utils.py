@@ -36,12 +36,21 @@ class Utils:
         return
 
     @classmethod
-    def get_rotation_params(cls):
+    def get_physical_params(cls):
         settings.settings["magnetic_filed"] = cls.cfg_parser.params["magnetic_filed"]
         settings.settings["rotation_axis"] = cls.cfg_parser.params["rotation_axis"]
         settings.settings["init_vector"] = cls.cfg_parser.params["init_vector"]
         settings.settings["dg_factor"] = cls.cfg_parser.params["dg_factor"]
         settings.settings["time_tc"] = cls.cfg_parser.params["time_tc"]
+        return
+
+    @classmethod
+    def get_numerical_params(cls):
+        settings.numerical_settings["number_of_iterations"] = cls.cfg_parser.params["number_of_iterations"]
+        settings.numerical_settings["time_of_termination"] = cls.cfg_parser.params["time_of_termination"]
+        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.params["hessian_diagonal"]
+        settings.numerical_settings["guess_rotation"] = cls.cfg_parser.params["guess_rotation"]
+        settings.numerical_settings["guess_pulse"] = cls.cfg_parser.params["guess_pulse"]
         return
 
     @classmethod

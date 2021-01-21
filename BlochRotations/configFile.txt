@@ -1,5 +1,15 @@
+############## PHYSICAL SETTINGS ##############
 results_file_path=./
 rotation_axis=x
+rotation_angle=x
 magnetic_filed=1
 time_tc=1
 dg_factor=1
+############## NUMERICAL SETTINGS ##############
+guess_pulse[float / bool]=-1
+guess_rotation[float / bool]=-1
+hessian_diagonal[bool]=False
+number_of_iterations[int]=100
+time_of_termination[sec]=0.
+epsilon[float]=0.
+learning_rate[float]=100.
