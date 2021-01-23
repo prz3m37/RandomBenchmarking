@@ -15,6 +15,7 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
         self.__cost_fun = cf.CostFunctions
         self.__rotations = rotation_handler.RotationHandler
         self.__settings_init = si.SettingsInitializer()
+        self.__learning_rate = self.__numerical_settings["numerical_settings"]
 
     def __del__(self):
         del self.__settings_init
@@ -38,19 +39,25 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
         self.__cost_fun.pulse_state = self.__settings['init_vector']
         return
 
-    def __update_learning_rate(self):
+    #TODO Think how to deal with it ! 
+    def __spike_out_of_local_minima(self):
         return
 
-    def __check_matrix_cost_function(self, **kwargs):
-        difference = self.__cost_fun.matrix_cost_function(**kwargs)
+    def __update_learning_rate(self, fidelity_i, fidelity_i1):
+        if fidelity_i < fidelity_i1:
+            self.__learning_rate *= self.__numerical_settings["learning_decrementation"]
+        else:
+            self.__learning_rate *= self.__numerical_settings["learning_decrementation"]
+        return
+
+    def __check_matrix_cost_function(self, difference):
         epsilon = self.__numerical_settings["epsilon"]
         if np.real(difference) <= epsilon and np.imag(difference) <= epsilon:
             return True
         else:
             return False
 
-    def __check_fidelity_cost_function(self, **kwargs):
-        fidelity = self.__cost_fun.fidelity_cost_function(**kwargs)
+    def __check_fidelity_cost_function(self, fidelity):
         if fidelity <= self.__numerical_settings["epsilon"]:
             return True
         else:

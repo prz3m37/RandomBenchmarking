@@ -52,6 +52,10 @@ class ConfigParser:
         cls.params["time_tc"] = float(cls.params["time_tc"])
 
         cls.numerical_params["epsilon"] = float(cls.params["epsilon"])
+        cls.numerical_params["learning_decrementation"] = float(cls.params["learning_decrementation"]) \
+            if cls.params["learning_decrementation"] != "None" else "None"
+        cls.numerical_params["learning_incrementation"] = float(cls.params["learning_incrementation"]) \
+            if cls.params["learning_incrementation"] != "None" else "None"
         cls.numerical_params["learning_rate"] = float(cls.params["learning_rate"]) \
             if cls.params["learning_rate"] != "None" else "None"
         cls.numerical_params["guess_pulse"] = float(cls.params["guess_pulse"]) \

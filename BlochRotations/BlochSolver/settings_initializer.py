@@ -17,6 +17,8 @@ class SettingsInitializer:
         self.__set_termination_time()
         self.__set_max_iteration()
         self.__set_init_learning_rate()
+        self.__set_learning_incrementation()
+        self.__set_learning_decrementation()
         return
 
     def __set_init_pulse(self):
@@ -27,6 +29,16 @@ class SettingsInitializer:
     def __set_init_learning_rate(self):
         if self.__num_settings["learning_rate"] == "None":
             self.__num_settings["learning_rate"] = 10.
+        return
+
+    def __set_learning_incrementation(self):
+        if self.__num_settings["learning_incrementation"] == "None":
+            self.__num_settings["learning_incrementation"] = 2.
+        return
+
+    def __set_learning_decrementation(self):
+        if self.__num_settings["learning_decrementation"] == "None":
+            self.__num_settings["learning_decrementation"] = 0.5
         return
 
     def __set_init_angle(self):
