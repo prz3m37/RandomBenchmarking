@@ -12,8 +12,10 @@ numerical_settings = {"guess_pulse": None,
                       "hessian_diagonal": None,
                       "number_of_iterations": None,
                       "time_of_termination": None,
-                      "epsilon": None,
                       "learning_rate": None,
                       "learning_incrementation": None,
-                      "learning_decrementation": None
+                      "learning_decrementation": None,
+                      "error": None,
+                      "hx": None,
+                      "hy": None
                       }

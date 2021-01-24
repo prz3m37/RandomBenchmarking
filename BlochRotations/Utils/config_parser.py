@@ -13,20 +13,26 @@ class ConfigParser:
 
     numerical_params = {"guess_pulse": None,
                         "guess_rotation": None,
-                        "cost_function": "",
-                        "hessian_diagonal": False,
-                        "number_of_iterations": 100,
-                        "time_of_termination": 0.,
+                        "hessian_diagonal": None,
+                        "number_of_iterations": None,
+                        "time_of_termination": None,
+                        "learning_rate": None,
+                        "learning_incrementation": None,
+                        "learning_decrementation": None,
+                        "error": None,
+                        "hx": None,
+                        "hy": None
                         }
 
     @classmethod
     def get_params(cls):
-        cfg_file = open("./configFile.txt")
+        cfg_file = open("./configFile.txt", "r")
         for line in cfg_file:
-            param_name, param_value = line.split("=")
-            param_value = param_value.strip()
-            cls.params[param_name] = param_value
-            if line == "############## NUMERICAL SETTINGS ##############":
+            if not line.startswith("#"):
+                param_name, param_value = line.split("=")
+                param_value = param_value.strip()
+                cls.params[param_name] = param_value
+            if line == "############## NUMERICAL SETTINGS ##############\n":
                 break
         return
 
@@ -35,39 +41,44 @@ class ConfigParser:
         cfg_file = open("./configFile.txt")
         found_abstract = False
         for line in cfg_file:
-            if '############## NUMERICAL SETTINGS ##############' in line:
+            if line == "############## NUMERICAL SETTINGS ##############\n":
                 found_abstract = True
-            if found_abstract:
+            if found_abstract and not line.startswith("#"):
                 param_name, param_value = line.split("=")
                 param_value = param_value.strip()
                 cls.numerical_params[param_name] = param_value
+            if line == "############## TYPES ##############\n":
+                break
         return
 
     @classmethod
     def convert_data(cls):
         print("[INFO]: Data converted")
         cls.params["magnetic_filed"] = float(cls.params["magnetic_filed"])
-        cls.params["target_pulse"] = float(cls.params["target_pulse"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
         cls.params["time_tc"] = float(cls.params["time_tc"])
 
-        cls.numerical_params["epsilon"] = float(cls.params["epsilon"])
-        cls.numerical_params["learning_decrementation"] = float(cls.params["learning_decrementation"]) \
-            if cls.params["learning_decrementation"] != "None" else "None"
-        cls.numerical_params["learning_incrementation"] = float(cls.params["learning_incrementation"]) \
-            if cls.params["learning_incrementation"] != "None" else "None"
-        cls.numerical_params["learning_rate"] = float(cls.params["learning_rate"]) \
-            if cls.params["learning_rate"] != "None" else "None"
-        cls.numerical_params["guess_pulse"] = float(cls.params["guess_pulse"]) \
-            if cls.params["guess_pulse"] != "None" else "None"
-        cls.numerical_params["guess_rotation"] = float(cls.params["guess_rotation"]) \
-            if cls.params["guess_rotation"] != "None" else "None"
-        cls.numerical_params["hessian_diagonal"] = bool(cls.params["hessian_diagonal"]) \
-            if cls.params["hessian_diagonal"] != "None" else "None"
-        cls.numerical_params["time_of_termination"] = bool(cls.params["time_of_termination"]) \
-            if cls.params["time_of_termination"] != "None" else "None "
-        cls.numerical_params["number_of_iterations"] = bool(cls.params["number_of_iterations"]) \
-            if cls.params["number_of_iterations"] != "None" else "None"
+        cls.numerical_params["error"] = float(cls.numerical_params["error"])
+        cls.numerical_params["hx"] = float(cls.numerical_params["hx"]) \
+            if cls.numerical_params["hx"] is not "" else None
+        cls.numerical_params["hy"] = float(cls.numerical_params["hy"]) \
+            if cls.numerical_params["hy"] is not "" else None
+        cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
+            if cls.numerical_params["learning_decrementation"] is not "" else None
+        cls.numerical_params["learning_incrementation"] = float(cls.numerical_params["learning_incrementation"]) \
+            if cls.numerical_params["learning_incrementation"] is not "" else None
+        cls.numerical_params["learning_rate"] = float(cls.numerical_params["learning_rate"]) \
+            if cls.numerical_params["learning_rate"] is not "" else None
+        cls.numerical_params["guess_pulse"] = float(cls.numerical_params["guess_pulse"]) \
+            if cls.numerical_params["guess_pulse"] is not "" else None
+        cls.numerical_params["guess_rotation"] = float(cls.numerical_params["guess_rotation"]) \
+            if cls.numerical_params["guess_rotation"] is not "" else None
+        cls.numerical_params["hessian_diagonal"] = bool(cls.numerical_params["hessian_diagonal"]) \
+            if cls.numerical_params["hessian_diagonal"] is not "" else None
+        cls.numerical_params["time_of_termination"] = bool(cls.numerical_params["time_of_termination"]) \
+            if cls.numerical_params["time_of_termination"] is not "" else None
+        cls.numerical_params["number_of_iterations"] = bool(cls.numerical_params["number_of_iterations"]) \
+            if cls.numerical_params["number_of_iterations"] is not "" else None
         cls.__parse_string()
         return
 

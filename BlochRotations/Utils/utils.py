@@ -1,5 +1,5 @@
 from Utils import config_parser
-import settings
+from Utils import settings
 import datetime
 
 
@@ -12,7 +12,6 @@ class Utils:
         pass
 
     cfg_parser = config_parser.ConfigParser
-    cfg_parser.get_params()
     log_file = None
     results_file = None
     __result_file_path = cfg_parser.params["results_file_path"]
@@ -21,6 +20,7 @@ class Utils:
     def initialize_utilities(cls):
         cls.cfg_parser = config_parser.ConfigParser
         cls.cfg_parser.get_params()
+        cls.cfg_parser.get_numerical_params()
         cls.cfg_parser.convert_data()
         cls.log_file = None
         cls.results_file = None
@@ -51,6 +51,15 @@ class Utils:
         settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.params["hessian_diagonal"]
         settings.numerical_settings["guess_rotation"] = cls.cfg_parser.params["guess_rotation"]
         settings.numerical_settings["guess_pulse"] = cls.cfg_parser.params["guess_pulse"]
+
+        settings.numerical_settings["learning_incrementation"] = cls.cfg_parser.params["learning_incrementation"]
+        settings.numerical_settings["learning_decrementation"] = cls.cfg_parser.params["learning_decrementation"]
+        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.params["hessian_diagonal"]
+        settings.numerical_settings["learning_rate"] = cls.cfg_parser.params["learning_rate"]
+        settings.numerical_settings["error"] = cls.cfg_parser.params["error"]
+        settings.numerical_settings["hx"] = cls.cfg_parser.params["hx"]
+        settings.numerical_settings["hy"] = cls.cfg_parser.params["hy"]
+
         return
 
     @classmethod
