@@ -75,9 +75,9 @@ class ConfigParser:
             if cls.numerical_params["guess_rotation"] != "" else None
         cls.numerical_params["hessian_diagonal"] = bool(cls.numerical_params["hessian_diagonal"]) \
             if cls.numerical_params["hessian_diagonal"] != "" else None
-        cls.numerical_params["time_of_termination"] = bool(cls.numerical_params["time_of_termination"]) \
+        cls.numerical_params["time_of_termination"] = float(cls.numerical_params["time_of_termination"]) \
             if cls.numerical_params["time_of_termination"] != "" else None
-        cls.numerical_params["number_of_iterations"] = bool(cls.numerical_params["number_of_iterations"]) \
+        cls.numerical_params["number_of_iterations"] = float(cls.numerical_params["number_of_iterations"]) \
             if cls.numerical_params["number_of_iterations"] != "" else None
         cls.__parse_string()
         return

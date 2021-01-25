@@ -67,5 +67,5 @@ class SettingsInitializer:
 
     def __set_max_iteration(self):
         if self.__num_settings["number_of_iterations"] is None:
-            self.__num_settings["number_of_iterations"] = 100.
+            self.__num_settings["number_of_iterations"] = 1000.
         return

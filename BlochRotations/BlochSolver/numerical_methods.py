@@ -16,7 +16,7 @@ class NumericalMethods:
     @classmethod
     def __get_derivative(cls, f, x0: float, y0: float, hx: float = 0, hy: float = 0):
         h = hx if hy == 0 else hy
-        return (f(x0 + hx, y0 + hy) - f(x0 - hx, y0 + hy)) / (2 * h)
+        return (f(x0 + hx, y0 + hy) - f(x0 - hx, y0 - hy)) / (2 * h)
 
     @classmethod
     def __get_second_derivative(cls, f, x0: float, y0: float, var: str):
