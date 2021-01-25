@@ -1,13 +1,14 @@
-from Rotations import rotation_handler
+from Rotations import rotation_handler as rh
 from BlochSolver import cost_functions as cf
 from BlochSolver import numerical_methods as nm
 from BlochSolver import settings_initializer as si
 from Utils import settings
+from Utils import utils
 import numpy as np
 import time
 
 
-class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMethods):
+class LevenbergMarquardtSolver(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
         self.__settings = settings.settings
@@ -29,31 +30,29 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
                            self.__numerical_settings["guess_rotation"]])
         time_start = time.time()
         while True:
-
-            hessian = self.get_hessian_matrix(f=self.__cf.matrix_cost_function(),
+            hessian = self.get_hessian_matrix(f=self.__cf.matrix_cost_function,
                                               x0=x_init[0],
                                               y0=x_init[1],
                                               )
             newton_part = self.get_inverse_matrix(hessian + self.__learning_rate * self.__idn)
-            gradient = self.get_gradient(f=self.__cf.matrix_cost_function(),
-                                         x0=x_init[0],
-                                         y0=x_init[1])
+            gradient = self.get_gradient(f=self.__cf.matrix_cost_function, x0=x_init[0], y0=x_init[1])
             x_step = x_init - np.matmul(newton_part, gradient)
+            error_init = self.__cf.matrix_cost_function(x0=x_init[0], y0=x_init[1])
+            error_step = self.__cf.matrix_cost_function(x0=x_step[0], y0=x_step[1])
 
-            error_init = self.__cf.matrix_cost_function()
-
-            error_step = self.__cf.matrix_cost_function()
+            result = "ITERATION " + str(iteration) + " ERROR_INIT " + str(error_init) + " ERROR_STEP " \
+                     + str(error_step) + " X_INIT " + str(x_init) + " X_STEP " + str(x_step) + " LEARNING_RATE " \
+                     + str(self.__learning_rate)
+            utils.Utils.save_result(result)
             x_init = x_step
             iteration += 1
             time_elapsed = time_start - time.time()
 
             if self.__check_matrix_cost_function(error_init):
-                break
-            elif self.__check_matrix_cost_function(error_init):
+                utils.Utils.save_log("[INFO]: Matrix cost function condition fulfilled")
                 break
             else:
                 self.__update_learning_rate(fidelity_i=error_init, fidelity_i1=error_step)
-
             if self.__check_termination_conditions(time_elapsed, iteration):
                 break
         return
@@ -66,7 +65,6 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
 
     def __get_lma_fidelity_func_hessian(self):
         return
-
 
     def __apply_initial_pulse(self):
         self.__cf.pulse_state = self.__settings['init_vector']
@@ -85,7 +83,7 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
 
     def __check_matrix_cost_function(self, error):
         error_rate = self.__numerical_settings["error"]
-        if np.real(error) <= error_rate and np.imag(error) <= error_rate:
+        if np.abs(np.real(error)) <= error_rate and np.abs(np.imag(error)) <= error_rate:
             return True
         else:
             return False
@@ -98,8 +96,10 @@ class LevenbergMarquardtSolver(rotation_handler.RotationHandler, nm.NumericalMet
 
     def __check_termination_conditions(self, time_elapsed, iteration):
         if time_elapsed >= self.__numerical_settings["time_of_termination"]:
+            utils.Utils.save_log("[INFO]: Time exceeded")
             return True
         elif iteration == self.__numerical_settings["number_of_iterations"]:
+            utils.Utils.save_log("[INFO]: Number of iterations exceeded")
             return True
         else:
             return False

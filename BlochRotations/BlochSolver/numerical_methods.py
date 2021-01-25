@@ -2,7 +2,7 @@ import numpy as np
 
 
 class NumericalMethods:
-    hessian = np.zeros((2, 2))
+    hessian = np.zeros((2, 2), dtype='complex_')
     hx = None
     hy = None
     __variables = ["x", "y"]
@@ -24,7 +24,6 @@ class NumericalMethods:
         dy = cls.hy if var == 'y' else 0
         h = cls.hx if var == 'x' else cls.hy
 
-        print(f(1, 1))
         return (f(x0 + 2 * dx, y0 + 2 * dy) - 2 * f(x0 + dx, y0 + dy) + f(x0, y0)) / (h ** 2)
 
     @classmethod
@@ -35,7 +34,7 @@ class NumericalMethods:
     @classmethod
     def get_gradient(cls, f, x0: float, y0: float):
         data = [[x0, y0, cls.hx, 0], [x0, y0, 0, cls.hy]]
-        return np.fromiter((cls.__get_derivative(f, xi, yi, dx, dy) for xi, yi, dx, dy in data), np.float64)
+        return np.fromiter((cls.__get_derivative(f, xi, yi, dx, dy) for xi, yi, dx, dy in data), np.complex)
 
     # TODO: Analytical derivative is calculated by using chain rule.
     @classmethod
@@ -62,7 +61,7 @@ class NumericalMethods:
                     cls.hessian[i, j] = cls.__get_second_derivative(f, x0, y0, cls.__variables[i])
                 else:
                     cls.hessian[i, j] = cls.__get_mixed_derivative(f, x0, y0)
-        return
+        return cls.hessian
 
     @classmethod
     def get_diagonal_hessian(cls, matrix: np.array):

@@ -22,6 +22,8 @@ class Utils:
         cls.cfg_parser.get_params()
         cls.cfg_parser.get_numerical_params()
         cls.cfg_parser.convert_data()
+        cls.set_numerical_params()
+        cls.set_physical_params()
         cls.log_file = None
         cls.results_file = None
         cls.__result_file_path = cls.cfg_parser.params["results_file_path"]
@@ -36,8 +38,8 @@ class Utils:
         return
 
     @classmethod
-    def get_physical_params(cls):
-        settings.settings["magnetic_filed"] = cls.cfg_parser.params["magnetic_filed"]
+    def set_physical_params(cls):
+        settings.settings["magnetic_field"] = cls.cfg_parser.params["magnetic_field"]
         settings.settings["rotation_axis"] = cls.cfg_parser.params["rotation_axis"]
         settings.settings["init_vector"] = cls.cfg_parser.params["init_vector"]
         settings.settings["dg_factor"] = cls.cfg_parser.params["dg_factor"]
@@ -45,20 +47,22 @@ class Utils:
         return
 
     @classmethod
-    def get_numerical_params(cls):
-        settings.numerical_settings["number_of_iterations"] = cls.cfg_parser.params["number_of_iterations"]
-        settings.numerical_settings["time_of_termination"] = cls.cfg_parser.params["time_of_termination"]
-        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.params["hessian_diagonal"]
-        settings.numerical_settings["guess_rotation"] = cls.cfg_parser.params["guess_rotation"]
-        settings.numerical_settings["guess_pulse"] = cls.cfg_parser.params["guess_pulse"]
+    def set_numerical_params(cls):
+        settings.numerical_settings["number_of_iterations"] = cls.cfg_parser.numerical_params["number_of_iterations"]
+        settings.numerical_settings["time_of_termination"] = cls.cfg_parser.numerical_params["time_of_termination"]
+        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.numerical_params["hessian_diagonal"]
+        settings.numerical_settings["guess_rotation"] = cls.cfg_parser.numerical_params["guess_rotation"]
+        settings.numerical_settings["guess_pulse"] = cls.cfg_parser.numerical_params["guess_pulse"]
 
-        settings.numerical_settings["learning_incrementation"] = cls.cfg_parser.params["learning_incrementation"]
-        settings.numerical_settings["learning_decrementation"] = cls.cfg_parser.params["learning_decrementation"]
-        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.params["hessian_diagonal"]
-        settings.numerical_settings["learning_rate"] = cls.cfg_parser.params["learning_rate"]
-        settings.numerical_settings["error"] = cls.cfg_parser.params["error"]
-        settings.numerical_settings["hx"] = cls.cfg_parser.params["hx"]
-        settings.numerical_settings["hy"] = cls.cfg_parser.params["hy"]
+        settings.numerical_settings["learning_incrementation"] = \
+            cls.cfg_parser.numerical_params["learning_incrementation"]
+        settings.numerical_settings["learning_decrementation"] = \
+            cls.cfg_parser.numerical_params["learning_decrementation"]
+        settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.numerical_params["hessian_diagonal"]
+        settings.numerical_settings["learning_rate"] = cls.cfg_parser.numerical_params["learning_rate"]
+        settings.numerical_settings["error"] = cls.cfg_parser.numerical_params["error"]
+        settings.numerical_settings["hx"] = cls.cfg_parser.numerical_params["hx"]
+        settings.numerical_settings["hy"] = cls.cfg_parser.numerical_params["hy"]
 
         return
 
@@ -70,7 +74,7 @@ class Utils:
 
     @classmethod
     def save_result(cls, result: str):
-        res = "[" + cls.__get_current_time() + "]" + result + "\n"
+        res = "[" + cls.__get_current_time() + "] " + result + "\n"
         cls.results_file.write(res)
         return
 
@@ -80,7 +84,7 @@ class Utils:
 
     @classmethod
     def __create_results_file(cls):
-        results_file_name = cls.__result_file_path + str(cls.__get_current_time()) + "_RB_RESULTS_FILE.txt"
+        results_file_name = cls.__result_file_path + str(cls.__get_current_time()) + "_BS_RESULTS_FILE.txt"
         cls.results_file = open(results_file_name, "a")
         cls.save_log("[INFO]: Results file created")
         return
@@ -93,7 +97,7 @@ class Utils:
 
     @classmethod
     def __create_log_file(cls):
-        log_file_name = str(cls.__get_current_time()) + "_RB_LOG_FILE.txt"
+        log_file_name = str(cls.__get_current_time()) + "_BS_LOG_FILE.txt"
         print(log_file_name)
         cls.log_file = open(log_file_name, "a")
         return

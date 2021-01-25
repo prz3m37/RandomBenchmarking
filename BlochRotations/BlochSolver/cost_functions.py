@@ -12,5 +12,5 @@ class CostFunctions:
         return np.abs(np.dot(cls.pulse_state, final_state)) ** 2
 
     @classmethod
-    def matrix_cost_function(cls):
-        return np.sum(getattr(cls.rh, "get_pulse_rotation_matrix") - getattr(cls.rh, "get_final_matrix")())
+    def matrix_cost_function(cls, x0, y0):
+        return np.sum(cls.rh.get_pulse_rotation_matrix(x0, y0) - cls.rh.get_final_matrix())

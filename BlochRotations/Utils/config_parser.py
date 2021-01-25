@@ -6,8 +6,7 @@ class ConfigParser:
               "rotation_axis": "",
               "rotation_angle": 0.,
               "init_vector": np.array([]),
-              "bohr_magneton": 0.,
-              "magnetic_filed": 0.,
+              "magnetic_field": 0.,
               "time_tc": 0.,
               "dg_factor": 0.}
 
@@ -54,31 +53,32 @@ class ConfigParser:
     @classmethod
     def convert_data(cls):
         print("[INFO]: Data converted")
-        cls.params["magnetic_filed"] = float(cls.params["magnetic_filed"])
+        cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
         cls.params["time_tc"] = float(cls.params["time_tc"])
+        cls.params["rotation_angle"] = float(cls.params["rotation_angle"])
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
         cls.numerical_params["hx"] = float(cls.numerical_params["hx"]) \
-            if cls.numerical_params["hx"] is not "" else None
+            if cls.numerical_params["hx"] != "" else None
         cls.numerical_params["hy"] = float(cls.numerical_params["hy"]) \
-            if cls.numerical_params["hy"] is not "" else None
+            if cls.numerical_params["hy"] != "" else None
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
-            if cls.numerical_params["learning_decrementation"] is not "" else None
+            if cls.numerical_params["learning_decrementation"] != "" else None
         cls.numerical_params["learning_incrementation"] = float(cls.numerical_params["learning_incrementation"]) \
-            if cls.numerical_params["learning_incrementation"] is not "" else None
+            if cls.numerical_params["learning_incrementation"] != "" else None
         cls.numerical_params["learning_rate"] = float(cls.numerical_params["learning_rate"]) \
-            if cls.numerical_params["learning_rate"] is not "" else None
+            if cls.numerical_params["learning_rate"] != "" else None
         cls.numerical_params["guess_pulse"] = float(cls.numerical_params["guess_pulse"]) \
-            if cls.numerical_params["guess_pulse"] is not "" else None
+            if cls.numerical_params["guess_pulse"] != "" else None
         cls.numerical_params["guess_rotation"] = float(cls.numerical_params["guess_rotation"]) \
-            if cls.numerical_params["guess_rotation"] is not "" else None
+            if cls.numerical_params["guess_rotation"] != "" else None
         cls.numerical_params["hessian_diagonal"] = bool(cls.numerical_params["hessian_diagonal"]) \
-            if cls.numerical_params["hessian_diagonal"] is not "" else None
+            if cls.numerical_params["hessian_diagonal"] != "" else None
         cls.numerical_params["time_of_termination"] = bool(cls.numerical_params["time_of_termination"]) \
-            if cls.numerical_params["time_of_termination"] is not "" else None
+            if cls.numerical_params["time_of_termination"] != "" else None
         cls.numerical_params["number_of_iterations"] = bool(cls.numerical_params["number_of_iterations"]) \
-            if cls.numerical_params["number_of_iterations"] is not "" else None
+            if cls.numerical_params["number_of_iterations"] != "" else None
         cls.__parse_string()
         return
 

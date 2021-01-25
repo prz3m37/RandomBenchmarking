@@ -8,11 +8,15 @@ class RotationHandler:
     pulse_state = None
 
     @classmethod
+    def load_numerical_settings(cls):
+        return
+
+    @classmethod
     def __get_rotation_angle(cls, pulse: float):
         j_function = np.sqrt(0.25 * pulse ** 2 + 2 * s.settings["time_tc"]) - 0.5 * pulse
-        cls.theta = np.arctan(s.settings["magnetic_filed"] * s.settings["dg_factor"] *
+        cls.theta = np.arctan(s.settings["magnetic_field"] * s.settings["dg_factor"] *
                               s.settings["bohr_magneton"] / j_function)
-        cls.theta = np.deg2rad(cls.theta)
+        cls.theta = np.deg2rad(np.real(cls.theta))
         return
 
     @classmethod

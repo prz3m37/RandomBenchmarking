@@ -2,8 +2,8 @@ settings = {"results_file_path": "",
             "rotation_axis": "",
             "rotation_angle": 0.,
             "init_vector": None,
-            "bohr_magneton": 0.,
-            "magnetic_filed": 0.,
+            "bohr_magneton": 1.20,
+            "magnetic_field": 0.,
             "time_tc": 0.,
             "dg_factor": 0.}
 
