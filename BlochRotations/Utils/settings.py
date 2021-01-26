@@ -8,7 +8,7 @@ settings = {"results_file_path": "",
             "dg_factor": 0.}
 
 numerical_settings = {"guess_pulse": None,
-                      "guess_rotation": None,
+                      "sequence_length": None,
                       "hessian_diagonal": None,
                       "number_of_iterations": None,
                       "time_of_termination": None,

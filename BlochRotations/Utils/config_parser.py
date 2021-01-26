@@ -11,16 +11,15 @@ class ConfigParser:
               "dg_factor": 0.}
 
     numerical_params = {"guess_pulse": None,
-                        "guess_rotation": None,
                         "hessian_diagonal": None,
-                        "number_of_iterations": None,
-                        "time_of_termination": None,
-                        "learning_rate": None,
-                        "learning_incrementation": None,
-                        "learning_decrementation": None,
-                        "error": None,
-                        "hx": None,
-                        "hy": None
+                        "number_of_iterations": 0.,
+                        "time_of_termination": 0.,
+                        "learning_rate": 0.,
+                        "learning_incrementation": 0.,
+                        "learning_decrementation": 0.,
+                        "error": 0.,
+                        "hx": 0.,
+                        "hy": 0.
                         }
 
     @classmethod
@@ -71,8 +70,6 @@ class ConfigParser:
             if cls.numerical_params["learning_rate"] != "" else None
         cls.numerical_params["guess_pulse"] = float(cls.numerical_params["guess_pulse"]) \
             if cls.numerical_params["guess_pulse"] != "" else None
-        cls.numerical_params["guess_rotation"] = float(cls.numerical_params["guess_rotation"]) \
-            if cls.numerical_params["guess_rotation"] != "" else None
         cls.numerical_params["hessian_diagonal"] = bool(cls.numerical_params["hessian_diagonal"]) \
             if cls.numerical_params["hessian_diagonal"] != "" else None
         cls.numerical_params["time_of_termination"] = float(cls.numerical_params["time_of_termination"]) \

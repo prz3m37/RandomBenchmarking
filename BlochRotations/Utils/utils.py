@@ -51,7 +51,6 @@ class Utils:
         settings.numerical_settings["number_of_iterations"] = cls.cfg_parser.numerical_params["number_of_iterations"]
         settings.numerical_settings["time_of_termination"] = cls.cfg_parser.numerical_params["time_of_termination"]
         settings.numerical_settings["hessian_diagonal"] = cls.cfg_parser.numerical_params["hessian_diagonal"]
-        settings.numerical_settings["guess_rotation"] = cls.cfg_parser.numerical_params["guess_rotation"]
         settings.numerical_settings["guess_pulse"] = cls.cfg_parser.numerical_params["guess_pulse"]
 
         settings.numerical_settings["learning_incrementation"] = \

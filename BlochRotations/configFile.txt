@@ -8,7 +8,6 @@ time_tc=1
 dg_factor=1
 ############## NUMERICAL SETTINGS ##############
 guess_pulse=
-guess_rotation=
 hessian_diagonal=False
 number_of_iterations=100
 time_of_termination=1000.

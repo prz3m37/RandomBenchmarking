@@ -12,8 +12,6 @@ class SettingsInitializer:
         pass
 
     def __initialize_numerical_settings(self):
-        self.__set_init_pulse()
-        self.__set_init_angle()
         self.__set_termination_time()
         self.__set_max_iteration()
         self.__set_init_learning_rate()
@@ -21,11 +19,6 @@ class SettingsInitializer:
         self.__set_learning_decrementation()
         self.__set_differentiation_step()
         self.__set_termination_error()
-        return
-
-    def __set_init_pulse(self):
-        if self.__num_settings["guess_pulse"] is None:
-            self.__num_settings["guess_pulse"] = np.random.uniform(low=0.1, high=1.)
         return
 
     def __set_init_learning_rate(self):
@@ -50,11 +43,6 @@ class SettingsInitializer:
             self.__num_settings["learning_decrementation"] = 0.5
         return
 
-    def __set_init_angle(self):
-        if self.__num_settings["guess_rotation"] is None:
-            self.__num_settings["guess_rotation"] = np.random.uniform(low=0., high=180.)
-        return
-
     def __set_termination_error(self):
         if self.__num_settings["error"] is None:
             self.__num_settings["error"] = 1e-5
@@ -67,5 +55,5 @@ class SettingsInitializer:
 
     def __set_max_iteration(self):
         if self.__num_settings["number_of_iterations"] is None:
-            self.__num_settings["number_of_iterations"] = 1000.
+            self.__num_settings["number_of_iterations"] = np.inf
         return

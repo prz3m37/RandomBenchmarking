@@ -6,7 +6,8 @@ def main():
     utilities = utils.Utils
     utilities.initialize_utilities()
     lma = levenberg_marquardt.LevenbergMarquardtSolver()
-    lma.get_lma_matrix_func()
+    lma.get_lma_bloch()
+    utilities.release_utilities()
     return
 
 
