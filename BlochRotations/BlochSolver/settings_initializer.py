@@ -17,20 +17,12 @@ class SettingsInitializer:
         self.__set_init_learning_rate()
         self.__set_learning_incrementation()
         self.__set_learning_decrementation()
-        self.__set_differentiation_step()
         self.__set_termination_error()
         return
 
     def __set_init_learning_rate(self):
         if self.__num_settings["learning_rate"] is None:
             self.__num_settings["learning_rate"] = 10.
-        return
-
-    def __set_differentiation_step(self):
-        if self.__num_settings["hx"] is None:
-            self.__num_settings["hx"] = 1e-5
-        if self.__num_settings["hy"] is None:
-            self.__num_settings["hy"] = 1e-5
         return
 
     def __set_learning_incrementation(self):

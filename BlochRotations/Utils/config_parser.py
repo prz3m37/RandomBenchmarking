@@ -3,23 +3,16 @@ import numpy as np
 
 class ConfigParser:
     params = {"results_file_path": "",
-              "rotation_axis": "",
-              "rotation_angle": 0.,
-              "init_vector": np.array([]),
               "magnetic_field": 0.,
               "time_tc": 0.,
               "dg_factor": 0.}
 
-    numerical_params = {"guess_pulse": None,
-                        "hessian_diagonal": None,
-                        "number_of_iterations": 0.,
+    numerical_params = {"number_of_iterations": 0.,
                         "time_of_termination": 0.,
                         "learning_rate": 0.,
                         "learning_incrementation": 0.,
                         "learning_decrementation": 0.,
                         "error": 0.,
-                        "hx": 0.,
-                        "hy": 0.
                         }
 
     @classmethod
@@ -45,7 +38,7 @@ class ConfigParser:
                 param_name, param_value = line.split("=")
                 param_value = param_value.strip()
                 cls.numerical_params[param_name] = param_value
-            if line == "############## TYPES ##############\n":
+            if line == "############## TYPES INFO ##############\n":
                 break
         return
 
@@ -55,31 +48,16 @@ class ConfigParser:
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
         cls.params["time_tc"] = float(cls.params["time_tc"])
-        cls.params["rotation_angle"] = float(cls.params["rotation_angle"])
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
-        cls.numerical_params["hx"] = float(cls.numerical_params["hx"]) \
-            if cls.numerical_params["hx"] != "" else None
-        cls.numerical_params["hy"] = float(cls.numerical_params["hy"]) \
-            if cls.numerical_params["hy"] != "" else None
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
             if cls.numerical_params["learning_decrementation"] != "" else None
         cls.numerical_params["learning_incrementation"] = float(cls.numerical_params["learning_incrementation"]) \
             if cls.numerical_params["learning_incrementation"] != "" else None
         cls.numerical_params["learning_rate"] = float(cls.numerical_params["learning_rate"]) \
             if cls.numerical_params["learning_rate"] != "" else None
-        cls.numerical_params["guess_pulse"] = float(cls.numerical_params["guess_pulse"]) \
-            if cls.numerical_params["guess_pulse"] != "" else None
-        cls.numerical_params["hessian_diagonal"] = bool(cls.numerical_params["hessian_diagonal"]) \
-            if cls.numerical_params["hessian_diagonal"] != "" else None
         cls.numerical_params["time_of_termination"] = float(cls.numerical_params["time_of_termination"]) \
             if cls.numerical_params["time_of_termination"] != "" else None
         cls.numerical_params["number_of_iterations"] = float(cls.numerical_params["number_of_iterations"]) \
             if cls.numerical_params["number_of_iterations"] != "" else None
-        cls.__parse_string()
-        return
-
-    @classmethod
-    def __parse_string(cls):
-        cls.params["init_vector"] = np.fromstring(cls.params["init_vector"], dtype=float, sep=',')
         return

@@ -1,37 +1,23 @@
 ############## PHYSICAL SETTINGS ##############
 results_file_path=./
-rotation_axis=x
-init_vector=1,1,1
-rotation_angle=45
 magnetic_field=1
 time_tc=1
 dg_factor=1
 ############## NUMERICAL SETTINGS ##############
-guess_pulse=
-hessian_diagonal=False
 number_of_iterations=100
 time_of_termination=1000.
 learning_incrementation=
 learning_decrementation=
 learning_rate=100.
 error=1e-5
-hx=0.00001
-hy=0.00001
-############## TYPES ##############
+############## TYPES INFO ##############
 results_file_path[str]
-rotation_axis[str]
-rotation_angle[float]
 magnetic_filed[float]
 time_tc[float]
 dg_factor[float]
-guess_pulse[float / bool]
-guess_rotation[float / bool]
-hessian_diagonal[bool]
 number_of_iterations[int]
 time_of_termination[sec]
 learning_incrementation[float]
 learning_decrementation[float]
 learning_rate[float]
 epsilon[float]
-hx[float]
-hy[float]
