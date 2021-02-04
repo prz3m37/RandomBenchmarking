@@ -1,5 +1,5 @@
 import numpy as np
-from BlochSolver import numerical_methods as nm
+from BlochSolver.numerics import numerical_methods as nm
 
 
 class SimulationController:
@@ -20,19 +20,19 @@ class SimulationController:
         return
 
     @classmethod
-    def get_fidelity(cls, target_operator: np.array, pulse_operator: np.array):
-        fidelity = cls.num_methods.get_matrix_product(target_operator, pulse_operator)
+    def get_fidelity(cls, target_operator: np.array, density_operator: np.array):
+        fidelity = cls.num_methods.get_matrix_product(target_operator, density_operator)
         if fidelity <= cls.error:
             return True
         else:
             return False
 
     @classmethod
-    def update_learning_rate(cls, cost_function_step_a, cost_function_step_b, learning_rate):
-        if cost_function_step_a < cost_function_step_b:
+    def update_learning_rate(cls, fidelity_a: float, fidelity_b: float, learning_rate: float):
+        if fidelity_a < fidelity_b:
             learning_rate /= cls.learning_decrementation
             return
-        elif cost_function_step_a > cost_function_step_b:
+        elif fidelity_b > fidelity_a:
             learning_rate *= cls.learning_decrementation
             return
         else:
@@ -53,7 +53,7 @@ class SimulationController:
             return False
 
     @classmethod
-    def check_time_condition(cls, time: int):
+    def check_time_condition(cls, time: float):
         if time >= cls.time_of_termination:
             return True
         else:

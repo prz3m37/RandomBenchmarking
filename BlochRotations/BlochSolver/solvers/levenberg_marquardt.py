@@ -1,11 +1,8 @@
 from Rotations import rotation_handler as rh
-from BlochSolver import solver_controller as cf
-from BlochSolver import numerical_methods as nm
+from BlochSolver.numerics import numerical_methods as nm
 from BlochSolver import settings_initializer as si
 from Utils import settings
-from Utils import utils
 import numpy as np
-import time
 
 
 class LevenbergMarquardtSolver(rh.RotationHandler, nm.NumericalMethods):

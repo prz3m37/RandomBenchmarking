@@ -22,8 +22,7 @@ class NumericalMethods:
         return np.trace(np.dot(np.conj(operator_a).T, operator_b))
 
     @classmethod
-    def get_quantum_gradient(cls, ctr_field_h: np.array, backward_operators: np.array,
-                             propagation_operators: np.array):
+    def get_gradient(cls, ctr_field_h: np.array, backward_operators: np.array, propagation_operators: np.array):
         gradient = np.fromiter((-1 * cls.get_matrix_product(backward_operator,
                                                             1j * cls.dt * cls.get_commutator(ctr_field_h,
                                                                                              propagation_operator))

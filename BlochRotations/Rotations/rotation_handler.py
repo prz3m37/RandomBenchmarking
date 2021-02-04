@@ -1,6 +1,6 @@
 import numpy as np
 from Utils import settings as s
-from BlochSolver import numerical_methods as nm
+from BlochSolver.numerics import numerical_methods as nm
 
 
 # TODO: Maybe different instances will be needed for multiprocessing
@@ -35,6 +35,12 @@ class RotationHandler:
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):
         return np.linalg.multi_dot(pulse_sequence)
+
+    @classmethod
+    def get_step_density_operator(cls, init_state: np.array, pulse_operators: np.array):
+        evolution = cls.get_evolution(pulse_operators)
+        step_state = cls.get_state(evolution, init_state)
+        return nm.NumericalMethods.get_density_operator(step_state)
 
     @classmethod
     def __get_rotation_matrix(cls, alpha: float, axis: str):
