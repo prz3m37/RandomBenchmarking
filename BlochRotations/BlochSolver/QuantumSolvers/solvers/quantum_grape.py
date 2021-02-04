@@ -1,7 +1,6 @@
-from Rotations import rotation_handler as rh
-from BlochSolver.numerics import numerical_methods as nm, solver_controller as sc
-from BlochSolver import settings_initializer as si
-from Utils import settings
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm, solver_controller as sc
+from BlochSolver.Utils import settings
 import numpy as np
 import time
 
@@ -9,9 +8,7 @@ import time
 class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
-        self.__settings_init = si.SettingsInitializer()
         self.__sc = sc.SimulationController
-
         self.__settings = settings.settings
         self.__numerical_settings = settings.numerical_settings
         self.__l_rate = self.__numerical_settings["learning_rate"]
@@ -23,9 +20,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self.__pulses_s = None
         self.__pulses_e = None
         self.__ctrl_h = np.identity(2) + np.array([[1, 0], [0, -1]])
-
-    def __del__(self):
-        del self.__settings_init
 
     def grape_solver(self, algorithm_type: str = None, **kwargs):
         if algorithm_type is None:

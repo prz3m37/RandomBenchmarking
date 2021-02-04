@@ -1,6 +1,6 @@
 import numpy as np
-from Utils import settings as s
-from BlochSolver.numerics import numerical_methods as nm
+from BlochSolver.Utils import settings as s
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 
 # TODO: Maybe different instances will be needed for multiprocessing

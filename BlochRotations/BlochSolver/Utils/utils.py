@@ -1,5 +1,4 @@
-from Utils import config_parser
-from Utils import settings
+from BlochSolver.Utils import settings, config_parser
 import datetime
 
 
@@ -17,11 +16,12 @@ class Utils:
     __result_file_path = cfg_parser.params["results_file_path"]
 
     @classmethod
-    def initialize_utilities(cls):
+    def initialize_utilities(cls, results_path: str = "./"):
         cls.cfg_parser = config_parser.ConfigParser
-        cls.cfg_parser.get_params()
-        cls.cfg_parser.get_numerical_params()
+        cls.cfg_parser.get_params(results_path)
+        cls.cfg_parser.get_numerical_params(results_path)
         cls.cfg_parser.convert_data()
+        cls.__create_results_dir()
         cls.set_numerical_params()
         cls.set_physical_params()
         cls.log_file = None
@@ -100,3 +100,6 @@ class Utils:
         cls.log_file.close()
         return
 
+    @classmethod
+    def __create_results_dir(cls):
+        return

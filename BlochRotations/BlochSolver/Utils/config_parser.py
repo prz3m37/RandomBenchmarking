@@ -1,7 +1,5 @@
-import numpy as np
-
-
 class ConfigParser:
+
     params = {"results_file_path": "",
               "magnetic_field": 0.,
               "time_tc": 0.,
@@ -16,8 +14,8 @@ class ConfigParser:
                         }
 
     @classmethod
-    def get_params(cls):
-        cfg_file = open("./configFile.txt", "r")
+    def get_params(cls, results_path: str):
+        cfg_file = open(results_path + "configFile.txt", "r")
         for line in cfg_file:
             if not line.startswith("#"):
                 param_name, param_value = line.split("=")
@@ -28,8 +26,8 @@ class ConfigParser:
         return
 
     @classmethod
-    def get_numerical_params(cls):
-        cfg_file = open("./configFile.txt")
+    def get_numerical_params(cls, results_path: str):
+        cfg_file = open(results_path + "configFile.txt")
         found_abstract = False
         for line in cfg_file:
             if line == "############## NUMERICAL SETTINGS ##############\n":

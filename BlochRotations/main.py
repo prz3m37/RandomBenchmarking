@@ -1,14 +1,9 @@
-from BlochSolver import solvers
-from Utils import utils
+from BlochSolver.SolversManager import solvers
 
 
 def main():
-    # utilities = utils.Utils
-    # utilities.initialize_utilities()
-
-    pulse_solvers = solvers.Solvers()
-    pulse_solvers.get_solver("GRAPE")
-    # utilities.release_utilities()
+    quantum_solvers = solvers.Solvers()
+    quantum_solvers.get_solver()
     return
 
 

@@ -1,7 +1,7 @@
-from Rotations import rotation_handler as rh
-from BlochSolver.numerics import numerical_methods as nm
-from BlochSolver import settings_initializer as si
-from Utils import settings
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
+from BlochSolver.SolversManager import settings_initializer as si
+from BlochSolver.Utils import settings
 import numpy as np
 
 

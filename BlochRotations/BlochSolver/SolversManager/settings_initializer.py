@@ -1,4 +1,4 @@
-from Utils import settings
+from BlochSolver.Utils import settings
 import numpy as np
 
 

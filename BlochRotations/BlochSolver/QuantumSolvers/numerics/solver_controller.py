@@ -1,5 +1,5 @@
 import numpy as np
-from BlochSolver.numerics import numerical_methods as nm
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 
 class SimulationController:
