@@ -60,10 +60,6 @@ class RotationHandler:
         return nm.NumericalMethods.get_density_operator(ideal_state)
 
     @classmethod
-    def __get_deviation_angle(cls):
-        return
-
-    @classmethod
     def __get_rotation_sequence(cls, angles: np.array, axes: np.array):
         return np.fromiter((cls.__get_rotation_matrix(alpha, axis) for alpha, axis in zip(angles, axes)), np.complex)
 

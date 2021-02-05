@@ -1,7 +1,6 @@
 class ConfigParser:
 
-    params = {"results_file_path": "",
-              "magnetic_field": 0.,
+    params = {"magnetic_field": 0.,
               "time_tc": 0.,
               "dg_factor": 0.}
 
@@ -42,7 +41,6 @@ class ConfigParser:
 
     @classmethod
     def convert_data(cls):
-        print("[INFO]: Data converted")
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
         cls.params["time_tc"] = float(cls.params["time_tc"])

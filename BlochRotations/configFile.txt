@@ -1,5 +1,4 @@
 ############## PHYSICAL SETTINGS ##############
-results_file_path=./
 magnetic_field=1
 time_tc=1
 dg_factor=1
@@ -11,7 +10,6 @@ learning_decrementation=
 learning_rate=100.
 error=1e-5
 ############## TYPES INFO ##############
-results_file_path[str]
 magnetic_filed[float]
 time_tc[float]
 dg_factor[float]

@@ -1,6 +1,6 @@
 from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm, solver_controller as sc
-from BlochSolver.Utils import settings
+from BlochSolver.Utils import settings, utils
 import numpy as np
 import time
 
@@ -9,10 +9,11 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
         self.__sc = sc.SimulationController
+        self.__utils = utils.Utils
         self.__settings = settings.settings
         self.__numerical_settings = settings.numerical_settings
         self.__l_rate = self.__numerical_settings["learning_rate"]
-        self.load_numerical_settings(self.__numerical_settings)
+        self.load_numerical_settings(self.__settings)
         self.__sc.load_control_settings(self.__numerical_settings)
 
         self.__n_steps = None
@@ -22,13 +23,17 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self.__ctrl_h = np.identity(2) + np.array([[1, 0], [0, -1]])
 
     def grape_solver(self, algorithm_type: str = None, **kwargs):
-        if algorithm_type is None:
+        if algorithm_type is None or algorithm_type is "default":
+            self.__utils.save_log("[INFO]: GRAPE algorithm - default, iteration termination condition")
             return self.__get_grape_solver(**kwargs)
         elif algorithm_type == "time":
+            self.__utils.save_log("[INFO]: GRAPE algorithm - time termination condition")
             return self.__get_grape_solver_time(**kwargs)
         elif algorithm_type == "rate":
+            self.__utils.save_log("[INFO]: GRAPE algorithm - learning rate, iteration termination condition")
             return self.__get_grape_solver_learning_rate(**kwargs)
         elif algorithm_type == "rate time":
+            self.__utils.save_log("[INFO]: GRAPE algorithm - learning rate, time termination condition")
             return self.__get_grape_solver_learning_rate_time(**kwargs)
 
     def __get_grape_solver(self, initial_pulses: np.array, angles: np.array, axes: np.array, initial_state: np.array):
@@ -38,13 +43,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         while True:
             self.__get_order(self.__pulses_s)
             pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
-            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
-
-            if self.__sc.get_fidelity(target_operator, step_density_operator):
-                break
-            if self.__sc.check_iteration_condition(iteration):
-                break
-
             hermit_pulse_operators_sequence = self.get_hermit_sequence(pulse_operators_sequence)
             backward_operators = self.__get_backward_operators(target_operator, pulse_operators_sequence,
                                                                hermit_pulse_operators_sequence)
@@ -52,27 +50,36 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
             self.__pulses_e = self.__pulses_s + self.__l_rate * self.get_gradient(self.__ctrl_h, backward_operators,
                                                                                   propagation_operators)
-            self.__pulses_s = self.__pulses_e
-            iteration += 1
 
-        return self.__pulses_s
+            self.__get_order(self.__pulses_e)
+            pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
+            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
+            status_f, fidelity = self.__sc.get_fidelity(target_operator, step_density_operator)
+
+            results_msg = str(iteration) + " PULSES: " + str(self.__pulses_s) + " STATE: " + str(self.__pulses_e) + \
+                          " FIDELITY: " + fidelity
+            self.__utils.save_result(results_msg)
+            if status_f:
+                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+                break
+            elif self.__sc.check_iteration_condition(iteration):
+                self.__utils.save_log("[INFO]: Iteration condition fulfilled")
+                break
+            else:
+                self.__pulses_s = self.__pulses_e
+                iteration += 1
+
+        return self.__pulses_e
 
     def __get_grape_solver_time(self, initial_pulses: np.array, angles: np.array, axes: np.array,
-                              initial_state: np.array):
+                                initial_state: np.array):
         self.__pulses_s = initial_pulses
         target_operator = self.get_target_operator(angles, axes, initial_state)
         time_start = time.time()
+        iteration = 0
         while True:
             self.__get_order(self.__pulses_s)
             pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
-            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
-
-            time_elapsed = time_start - time.time()
-            if self.__sc.get_fidelity(target_operator, step_density_operator):
-                break
-            if self.__sc.check_time_condition(time_elapsed):
-                break
-
             hermit_pulse_operators_sequence = self.get_hermit_sequence(pulse_operators_sequence)
             backward_operators = self.__get_backward_operators(target_operator, pulse_operators_sequence,
                                                                hermit_pulse_operators_sequence)
@@ -80,12 +87,31 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
             self.__pulses_e = self.__pulses_s + self.__l_rate * self.get_gradient(self.__ctrl_h, backward_operators,
                                                                                   propagation_operators)
-            self.__pulses_s = self.__pulses_e
 
-        return self.__pulses_s
+            self.__get_order(self.__pulses_e)
+            pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
+            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
+            status_f, fidelity = self.__sc.get_fidelity(target_operator, step_density_operator)
+
+            results_msg = str(iteration) + " PULSES: " + str(self.__pulses_s) + " STATE: " + str(self.__pulses_e) + \
+                          " FIDELITY: " + fidelity
+
+            self.__utils.save_result(results_msg)
+            time_elapsed = time_start - time.time()
+            if status_f:
+                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+                break
+            elif self.__sc.check_time_condition(time_elapsed):
+                self.__utils.save_log("[INFO]: Time condition fulfilled")
+                break
+            else:
+                self.__pulses_s = self.__pulses_e
+                iteration += 1
+
+        return self.__pulses_e
 
     def __get_grape_solver_learning_rate(self, initial_pulses: np.array, angles: np.array, axes: np.array,
-                                       initial_state: np.array):
+                                         initial_state: np.array):
         self.__pulses_s = initial_pulses
         self.__pulses_e = initial_pulses
         target_operator = self.get_target_operator(angles, axes, initial_state)
@@ -94,9 +120,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self.__get_order(self.__pulses_s)
             pulse_operators_sequence_s = self.get_pulse_operators(self.__inv_pulses)
             step_density_operator_s = self.get_step_density_operator(initial_state, pulse_operators_sequence_s)
-            self.__get_order(self.__pulses_e)
-            pulse_operators_sequence_e = self.get_pulse_operators(self.__inv_pulses)
-            step_density_operator_e = self.get_step_density_operator(initial_state, pulse_operators_sequence_e)
 
             hermit_pulse_operators_sequence = self.get_hermit_sequence(step_density_operator_s)
             backward_operators = self.__get_backward_operators(target_operator, step_density_operator_s,
@@ -105,30 +128,40 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
             self.__pulses_e = self.__pulses_s + self.__l_rate * self.get_gradient(self.__ctrl_h, backward_operators,
                                                                                   propagation_operators)
-            if self.__sc.get_fidelity(target_operator, step_density_operator_e):
-                break
-            if self.__sc.check_iteration_condition(iteration):
-                break
-            self.__sc.update_learning_rate(step_density_operator_s, step_density_operator_e, self.__l_rate)
 
-            self.__pulses_s = self.__pulses_e
-            iteration += 1
+            self.__get_order(self.__pulses_e)
+            pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
+            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
+
+            status_f, fidelity = self.__sc.get_fidelity(target_operator, step_density_operator)
+            self.__sc.update_learning_rate(step_density_operator_s, step_density_operator, self.__l_rate)
+            results_msg = str(iteration) + " PULSES: " + str(self.__pulses_s) + " STATE: " + str(self.__pulses_e) + \
+                          " FIDELITY: " + fidelity + " L_RATE: " + self.__l_rate
+            self.__utils.save_result(results_msg)
+
+            if status_f:
+                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+                break
+            elif self.__sc.check_iteration_condition(iteration):
+                self.__utils.save_log("[INFO]: Iteration condition fulfilled")
+                break
+            else:
+                self.__pulses_s = self.__pulses_e
+                iteration += 1
 
         return self.__pulses_e
 
     def __get_grape_solver_learning_rate_time(self, initial_pulses: np.array, angles: np.array, axes: np.array,
-                                            initial_state: np.array):
+                                              initial_state: np.array):
         self.__pulses_s = initial_pulses
         self.__pulses_e = initial_pulses
         target_operator = self.get_target_operator(angles, axes, initial_state)
         time_start = time.time()
+        iteration = 0
         while True:
             self.__get_order(self.__pulses_s)
             pulse_operators_sequence_s = self.get_pulse_operators(self.__inv_pulses)
             step_density_operator_s = self.get_step_density_operator(initial_state, pulse_operators_sequence_s)
-            self.__get_order(self.__pulses_e)
-            pulse_operators_sequence_e = self.get_pulse_operators(self.__inv_pulses)
-            step_density_operator_e = self.get_step_density_operator(initial_state, pulse_operators_sequence_e)
 
             hermit_pulse_operators_sequence = self.get_hermit_sequence(step_density_operator_s)
             backward_operators = self.__get_backward_operators(target_operator, step_density_operator_s,
@@ -137,14 +170,27 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
             self.__pulses_e = self.__pulses_s + self.__l_rate * self.get_gradient(self.__ctrl_h, backward_operators,
                                                                                   propagation_operators)
-            time_elapsed = time_start - time.time()
-            if self.__sc.get_fidelity(target_operator, step_density_operator_e):
-                break
-            if self.__sc.check_time_condition(time_elapsed):
-                break
-            self.__sc.update_learning_rate(step_density_operator_s, step_density_operator_e, self.__l_rate)
 
-            self.__pulses_s = self.__pulses_e
+            self.__get_order(self.__pulses_e)
+            pulse_operators_sequence = self.get_pulse_operators(self.__inv_pulses)
+            step_density_operator = self.get_step_density_operator(initial_state, pulse_operators_sequence)
+
+            status_f, fidelity = self.__sc.get_fidelity(target_operator, step_density_operator)
+            self.__sc.update_learning_rate(step_density_operator_s, step_density_operator, self.__l_rate)
+            results_msg = str(iteration) + " PULSES: " + str(self.__pulses_s) + " STATE: " + str(self.__pulses_e) + \
+                          " FIDELITY: " + fidelity + " L_RATE: " + self.__l_rate
+            self.__utils.save_result(results_msg)
+
+            time_elapsed = time_start - time.time()
+            if status_f:
+                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+                break
+            elif self.__sc.check_time_condition(time_elapsed):
+                self.__utils.save_log("[INFO]: Time condition fulfilled")
+                break
+            else:
+                self.__pulses_s = self.__pulses_e
+                iteration += 1
 
         return self.__pulses_e
 

@@ -1,18 +1,32 @@
+from BlochSolver.Plotter import plotter_converter as pc
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-class SolverPlotter:
+class BlochPlotter:
 
-    def __init__(self, pulses: np.array):
-        self.__size = len(pulses)
+    def __init__(self):
+        self.__size = None
+        self.__x_axis = None
+
+    def plot(self, pulses_final: np.array, plot_type: str = None, **kwargs):
+        self.__size = len(pulses_final)
         self.__x_axis = np.arange(1, self.__size + 1, 1)
+        if plot_type == "evolution":
+            pulse_vectors = pc.PlotterConverter.convert_bloch_coordinates(pulses_final, **kwargs)
+            self.__plot_evolution(pulse_vectors)
+        elif plot_type == "numerical":
+            self.__plot_numerical_data(**kwargs)
+        elif plot_type == "pulses":
+            self.__plot_pulses_diff(pulses_final=pulses_final, **kwargs)
+        else:
+            return
 
-    def plot_evolution(self):
+    def __plot_evolution(self, pulse_vectors: np.array):
         return
 
-    def plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
+    def __plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
         diff = pulses_init - pulses_final
         sns.set_style("dark")
         plt.figure(figsize=(17, 12))
@@ -40,7 +54,7 @@ class SolverPlotter:
         return
 
     @staticmethod
-    def plot_numerical_data(fidelities, learning_rate, iterations):
+    def __plot_numerical_data(fidelities, learning_rate, iterations):
         plt.figure(figsize=(17, 12))
 
         plt.subplot(211)
@@ -57,4 +71,3 @@ class SolverPlotter:
         plt.xticks(rotation=45)
         plt.show()
         return
-

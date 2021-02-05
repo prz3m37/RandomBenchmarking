@@ -1,5 +1,7 @@
 from BlochSolver.Utils import settings
+from BlochSolver.Utils import utils
 import numpy as np
+import json
 
 
 class SettingsInitializer:
@@ -7,6 +9,7 @@ class SettingsInitializer:
     def __init__(self):
         self.__num_settings = settings.numerical_settings
         self.__initialize_numerical_settings()
+        self.__save_numerical_settings()
 
     def __del__(self):
         pass
@@ -18,6 +21,10 @@ class SettingsInitializer:
         self.__set_learning_incrementation()
         self.__set_learning_decrementation()
         self.__set_termination_error()
+        return
+
+    def __save_numerical_settings(self):
+        utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__num_settings))
         return
 
     def __set_init_learning_rate(self):
