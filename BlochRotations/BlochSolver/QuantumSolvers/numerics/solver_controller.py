@@ -21,22 +21,20 @@ class SimulationController:
 
     @classmethod
     def get_fidelity(cls, target_operator: np.array, density_operator: np.array):
-        fidelity = cls.num_methods.get_matrix_product(target_operator, density_operator)
-        if fidelity <= cls.error:
+        fidelity = np.real(cls.num_methods.get_matrix_product(target_operator, density_operator))
+        if fidelity >= cls.error:
             return True, fidelity
         else:
             return False, fidelity
 
     @classmethod
-    def update_learning_rate(cls, fidelity_a: float, fidelity_b: float, learning_rate: float):
-        if fidelity_a < fidelity_b:
-            learning_rate /= cls.learning_decrementation
-            return
-        elif fidelity_b > fidelity_a:
-            learning_rate *= cls.learning_decrementation
-            return
+    def update_learning_rate(cls, fidelity_s: float, fidelity_e: float, learning_rate: float):
+        if fidelity_s < fidelity_e:
+            return learning_rate * cls.learning_decrementation
+        elif fidelity_s > fidelity_e:
+            return learning_rate * cls.learning_incrementation
         else:
-            return
+            return learning_rate
 
     @classmethod
     def check_gradient_condition(cls, gradient: np.array):

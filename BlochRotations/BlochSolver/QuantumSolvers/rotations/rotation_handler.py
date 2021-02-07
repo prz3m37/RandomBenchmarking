@@ -5,10 +5,11 @@ from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 # TODO: Maybe different instances will be needed for multiprocessing
 class RotationHandler:
+    idn = np.identity(2)
 
     @classmethod
     def __get_pulse_detuning(cls, pulse: float):
-        return np.sqrt(0.25 * pulse ** 2 + 2 * s.settings["time_tc"]) - 0.5 * pulse
+        return np.sqrt((0.25 * pulse ** 2) + (2 * s.settings["time_tc"]**2)) - 0.5 * pulse
 
     # TODO: Apply Daniel filter function
     @classmethod
@@ -30,11 +31,14 @@ class RotationHandler:
 
     @classmethod
     def get_pulse_operators(cls, pulses: np.array):
-        return np.fromiter((cls.__get_evolution_operator(pulse) for pulse in pulses), np.complex)
+        return np.array([cls.__get_evolution_operator(pulse) for pulse in pulses])
 
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):
-        return np.linalg.multi_dot(pulse_sequence)
+        if pulse_sequence.shape[0] == 1:
+            return pulse_sequence[0]
+        else:
+            return np.linalg.multi_dot(pulse_sequence)
 
     @classmethod
     def get_step_density_operator(cls, init_state: np.array, pulse_operators: np.array):
@@ -52,19 +56,24 @@ class RotationHandler:
             return cls.__get_z_rotation(alpha)
 
     @classmethod
-    def get_target_operator(cls, angles: np.array, axes: np.array, init_state: np.array):
+    def get_target_state(cls, angles: np.array, axes: np.array, init_state: np.array):
         angles, axes = angles[::-1], axes[::-1]
         rotations_sequence = cls.__get_rotation_sequence(angles, axes)
         target_rotation = cls.get_evolution(rotations_sequence)
         ideal_state = cls.get_state(target_rotation, init_state)
-        return nm.NumericalMethods.get_density_operator(ideal_state)
+        return ideal_state, nm.NumericalMethods.get_density_operator(ideal_state)
 
     @classmethod
     def __get_rotation_sequence(cls, angles: np.array, axes: np.array):
-        return np.fromiter((cls.__get_rotation_matrix(alpha, axis) for alpha, axis in zip(angles, axes)), np.complex)
+        return np.array([cls.__get_rotation_matrix(alpha=alpha, axis=axis) for alpha, axis in zip(angles, axes)])
 
     @classmethod
     def get_state(cls, evolution_operator: np.array, init_state: np.array):
+        evolution_operator = np.kron(evolution_operator, cls.idn)
+        return np.dot(evolution_operator, init_state)
+
+    @staticmethod
+    def get_state_stat(evolution_operator: np.array, init_state: np.array):
         return np.dot(evolution_operator, init_state)
 
     @staticmethod

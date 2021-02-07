@@ -24,6 +24,20 @@ class BlochPlotter:
             return
 
     def __plot_evolution(self, pulse_vectors: np.array):
+
+        phi, theta = np.mgrid[0:2*np.pi:100j, 0:np.pi:100j]
+        x_cor, y_cor, z_cor = pulse_vectors
+
+        x_sphere = np.sin(phi) * np.cos(theta)
+        y_sphere = np.sin(phi) * np.sin(theta)
+        z_sphere = np.cos(phi)
+
+        fig = plt.figure(figsize=(17, 12))
+        ax = fig.gca(projection='3d')
+        ax.plot_wireframe(x_sphere, y_sphere, z_sphere, color="darkgrey", alpha=0.1)
+        ax.scatter(x_cor, y_cor, z_cor, color="black", s=15)
+        plt.show()
+
         return
 
     def __plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
@@ -34,19 +48,19 @@ class BlochPlotter:
 
         plt.subplot(311)
         plt.title("Initial pulses")
-        plt.ylabel("\u03B5")
+        plt.ylabel("\u03B5 meV")
         sns.barplot(y=pulses_init, x=self.__x_axis, edgecolor='black', color="steelblue")
         plt.xticks(rotation=45)
 
         plt.subplot(312)
         plt.title("Final pulses")
-        plt.ylabel("\u03B5")
+        plt.ylabel("\u03B5 meV")
         sns.barplot(y=pulses_final, x=self.__x_axis, edgecolor='black', color="green")
         plt.xticks(rotation=45)
 
         plt.subplot(313)
         plt.title("Pulses difference")
-        plt.ylabel("\u0394 \u03B5")
+        plt.ylabel("\u0394 \u03B5 meV")
         plt.xlabel("steps [N]")
         sns.barplot(y=diff, x=self.__x_axis, edgecolor='black', color="darkred")
         plt.xticks(rotation=45)

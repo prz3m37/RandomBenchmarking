@@ -43,7 +43,7 @@ class ConfigParser:
     def convert_data(cls):
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
-        cls.params["time_tc"] = float(cls.params["time_tc"])
+        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 6.582119569 * 10**(-16))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \

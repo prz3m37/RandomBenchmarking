@@ -3,10 +3,12 @@ import numpy as np
 
 class NumericalMethods:
     dt = None
+    ctr_h = None
 
     @classmethod
-    def load_numerical_settings(cls, settings):
+    def load_numerical_settings(cls, settings: dict, control_hamiltonian:np.array):
         cls.dt = settings["time_tc"]
+        cls.ctr_h = control_hamiltonian
         return
 
     @classmethod
@@ -22,13 +24,10 @@ class NumericalMethods:
         return np.trace(np.dot(np.conj(operator_a).T, operator_b))
 
     @classmethod
-    def get_gradient(cls, ctr_field_h: np.array, backward_operators: np.array, propagation_operators: np.array):
-        gradient = np.fromiter((-1 * cls.get_matrix_product(backward_operator,
-                                                            1j * cls.dt * cls.get_commutator(ctr_field_h,
-                                                                                             propagation_operator))
-                                for backward_operator, propagation_operator
-                                in zip(backward_operators, propagation_operators)), np.complex)
-        return gradient
+    def get_gradient(cls, back_operators: np.array, prop_operators: np.array):
+        grad = -1 * np.array([cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.ctr_h, prop_op))
+                              for back_op, prop_op in zip(back_operators, prop_operators)])
+        return grad
 
     @classmethod
     def get_density_operator(cls, vector_a: np.array):
@@ -36,4 +35,4 @@ class NumericalMethods:
 
     @classmethod
     def get_hermit_sequence(cls, operator_sequence: np.array):
-        return np.fromiter((np.conj(operator).T for operator in operator_sequence), np.complex)
+        return np.array([np.conj(operator).T for operator in operator_sequence])

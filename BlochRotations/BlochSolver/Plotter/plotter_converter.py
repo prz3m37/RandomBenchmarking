@@ -8,7 +8,7 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
     @classmethod
     def convert_bloch_coordinates(cls, pulses: np.array, init_state: np.array):
         density_operators = cls.get_pulse_evolution(pulses, init_state)
-        return cls.get_pulse_real_vectors(density_operators)
+        return cls.get_pulse_real_vectors(density_operators).T
 
     @classmethod
     def get_real_vector(cls, density_operator: np.array):
@@ -19,13 +19,13 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
 
     @classmethod
     def get_pulse_real_vectors(cls, density_operators):
-        return np.fromiter((cls.get_real_vector(density_operator) for density_operator in density_operators), np.complex)
+        return np.array([cls.get_real_vector(density_operator) for density_operator in density_operators])
 
     @classmethod
     def get_pulse_evolution(cls, pulses: np.array, init_state: np.array):
         e_operators = cls.get_pulse_operators(pulses)
-        e_states = np.fromiter((cls.get_state(e_operator, init_state)
-                                for e_operator in e_operators), np.complex)
-        e_density_operators = np.fromiter((cls.get_density_operator(state)
-                                           for state in e_states), np.complex)
+        e_states = np.array([cls.get_state_stat(e_operator, init_state)
+                             for e_operator in e_operators])
+        e_density_operators = np.array([cls.get_density_operator(state)
+                                        for state in e_states])
         return e_density_operators
