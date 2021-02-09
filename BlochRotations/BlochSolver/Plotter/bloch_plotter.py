@@ -2,6 +2,8 @@ from BlochSolver.Plotter import plotter_converter as pc
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
 
 
 class BlochPlotter:
@@ -14,8 +16,9 @@ class BlochPlotter:
         self.__size = len(pulses_final)
         self.__x_axis = np.arange(1, self.__size + 1, 1)
         if plot_type == "evolution":
-            pulse_vectors = pc.PlotterConverter.convert_bloch_coordinates(pulses_final, **kwargs)
-            self.__plot_evolution(pulse_vectors)
+            init_vector, target_state, pulse_vectors = \
+                pc.PlotterConverter.convert_bloch_coordinates(pulses_final, **kwargs)
+            self.__plot_evolution(pulse_vectors, init_vector, target_state)
         elif plot_type == "numerical":
             self.__plot_numerical_data(**kwargs)
         elif plot_type == "pulses":
@@ -23,10 +26,13 @@ class BlochPlotter:
         else:
             return
 
-    def __plot_evolution(self, pulse_vectors: np.array):
+    @staticmethod
+    def __plot_evolution(pulse_vectors: np.array, init_vector: np.array, target_state:np.array):
 
-        phi, theta = np.mgrid[0:2*np.pi:100j, 0:np.pi:100j]
+        phi, theta = np.mgrid[0:2*np.pi:30j, 0:np.pi:30j]
         x_cor, y_cor, z_cor = pulse_vectors
+        x_init, y_init, z_init = init_vector
+        x_target, y_target, z_target = target_state
 
         x_sphere = np.sin(phi) * np.cos(theta)
         y_sphere = np.sin(phi) * np.sin(theta)
@@ -35,7 +41,10 @@ class BlochPlotter:
         fig = plt.figure(figsize=(17, 12))
         ax = fig.gca(projection='3d')
         ax.plot_wireframe(x_sphere, y_sphere, z_sphere, color="darkgrey", alpha=0.1)
-        ax.scatter(x_cor, y_cor, z_cor, color="black", s=15)
+        ax.scatter(x_init, y_init, z_init, color="blue", s=40)
+        ax.scatter(x_target, y_target, z_target, color="green", s=40)
+        ax.scatter(x_cor[-1], y_cor[-1], z_cor[-1], color="black", s=40)
+        ax.plot3D(x_cor, y_cor, z_cor, "--D", color="red")
         plt.show()
 
         return
@@ -44,7 +53,7 @@ class BlochPlotter:
         diff = pulses_init - pulses_final
         sns.set_style("dark")
         plt.figure(figsize=(17, 12))
-        plt.subplots_adjust(hspace=0.3)
+        plt.subplots_adjust(hspace=0.5)
 
         plt.subplot(311)
         plt.title("Initial pulses")
@@ -70,7 +79,7 @@ class BlochPlotter:
     @staticmethod
     def __plot_numerical_data(fidelities, learning_rate, iterations):
         plt.figure(figsize=(17, 12))
-
+        plt.tight_layout()
         plt.subplot(211)
         plt.title("Fidelity")
         plt.ylabel("Fidelity [a.u]")

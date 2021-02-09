@@ -47,13 +47,13 @@ class Utils:
     def set_numerical_params(cls):
         settings.numerical_settings["number_of_iterations"] = cls.cfg_parser.numerical_params["number_of_iterations"]
         settings.numerical_settings["time_of_termination"] = cls.cfg_parser.numerical_params["time_of_termination"]
-
         settings.numerical_settings["learning_incrementation"] = \
             cls.cfg_parser.numerical_params["learning_incrementation"]
         settings.numerical_settings["learning_decrementation"] = \
             cls.cfg_parser.numerical_params["learning_decrementation"]
         settings.numerical_settings["learning_rate"] = cls.cfg_parser.numerical_params["learning_rate"]
         settings.numerical_settings["error"] = cls.cfg_parser.numerical_params["error"]
+        settings.numerical_settings["down_error"] = cls.cfg_parser.numerical_params["down_error"]
         return
 
     @classmethod

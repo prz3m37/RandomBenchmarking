@@ -43,14 +43,16 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self.__e_s = initial_pulses
         self.__n_steps = initial_pulses.shape[0]
         self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
+        print(" ---> Target state:    ", np.around(self.__ideal_state, 3))
         iteration = 0
         while True:
-            self.__get_order(self.__e_s)
-            _, propagation_operators, backward_operators = self.__get_operators(initial_state)
+            propagation_operators, backward_operators = self.__get_operators(initial_state)
             self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
-            self.__get_order(self.__e_s)
+            # self.__e_e = np.clip(self.__e_e, a_min=0.0015, a_max=0.004)
+
+            self.__get_order(self.__e_e)
             status_f, fidelity = self.__evaluate_fidelity(initial_state)
-            results_msg = str(iteration) + " PULSES: " + str(self.__e_e) + " FID: " + str(np.round(fidelity, 3))
+            results_msg = str(iteration) + " PULSES: " + str(self.__e_e) + " FID: " + str(np.round(fidelity, 5))
             self.__utils.save_result(results_msg)
 
             if status_f:
@@ -63,51 +65,20 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 self.__e_s = self.__e_e
                 iteration += 1
 
-        return self.__e_e
-
-    def __get_grape_solver_time(self, initial_pulses: np.array, angles: np.array, axes: np.array,
-                                initial_state: np.array):
-        self.__e_s = initial_pulses
-        self.__n_steps = initial_pulses.shape[0]
-        self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
-        time_start = time.time()
-        iteration = 0
-        while True:
-            self.__get_order(self.__e_s)
-            _, propagation_operators, backward_operators = self.__get_operators(initial_state)
-            self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
-            self.__get_order(self.__e_s)
-            status_f, fidelity = self.__evaluate_fidelity(initial_state)
-            results_msg = str(iteration) + " PULSES: " + str(self.__e_e) + " FID: " + str(np.round(fidelity, 3))
-            self.__utils.save_result(results_msg)
-
-            time_elapsed = time_start - time.time()
-            if status_f:
-                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
-                break
-            elif self.__sc.check_time_condition(time_elapsed):
-                self.__utils.save_log("[INFO]: Time condition fulfilled")
-                break
-            else:
-                self.__e_s = self.__e_e
-                iteration += 1
-
-        return self.__e_e
+        return self.__ideal_state, self.__e_e
 
     def __get_grape_solver_learning_rate(self, initial_pulses: np.array, angles: np.array, axes: np.array,
                                          initial_state: np.array):
         self.__e_s = initial_pulses
         self.__n_steps = initial_pulses.shape[0]
         self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
+        print(" ---> Target state:    ", np.around(self.__ideal_state, 3))
         iteration = 0
         while True:
-
-            self.__get_order(self.__e_s)
-            pulse_operators_sequence, propagation_operators, backward_operators = self.__get_operators(initial_state)
+            propagation_operators, backward_operators = self.__get_operators(initial_state)
             _, fidelity_s = self.__evaluate_fidelity(initial_state)
-
             self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
-            self.__get_order(self.__e_e)
+
             status_f, fidelity_e = self.__evaluate_fidelity(initial_state)
             self.__l_rate = self.__sc.update_learning_rate(fidelity_s, fidelity_e, self.__l_rate)
 
@@ -125,17 +96,46 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 self.__e_s = self.__e_e
                 iteration += 1
 
-        return self.__e_e
+        return self.__ideal_state, self.__e_e
+
+    def __get_grape_solver_time(self, initial_pulses: np.array, angles: np.array, axes: np.array,
+                                initial_state: np.array):
+        self.__e_s = initial_pulses
+        self.__n_steps = initial_pulses.shape[0]
+        self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
+        print(" ---> Target state:    ", np.around(self.__ideal_state, 2))
+        time_start = time.time()
+        iteration = 0
+        while True:
+            propagation_operators, backward_operators = self.__get_operators(initial_state)
+            self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
+            status_f, fidelity = self.__evaluate_fidelity(initial_state)
+            results_msg = str(iteration) + " PULSES: " + str(self.__e_e) + " FID: " + str(np.round(fidelity, 3))
+            self.__utils.save_result(results_msg)
+
+            time_elapsed = time_start - time.time()
+            if status_f:
+                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+                break
+            elif self.__sc.check_time_condition(time_elapsed):
+                self.__utils.save_log("[INFO]: Time condition fulfilled")
+                break
+            else:
+                self.__e_s = self.__e_e
+                iteration += 1
+
+        return self.__ideal_state, self.__e_e
 
     def __get_grape_solver_learning_rate_time(self, initial_pulses: np.array, angles: np.array, axes: np.array,
                                               initial_state: np.array):
         self.__e_s = initial_pulses
         self.__n_steps = initial_pulses.shape[0]
         self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
+        print(" ---> Target state:    ", np.around(self.__ideal_state, 2))
         time_start = time.time()
         iteration = 0
         while True:
-            pulse_operators_sequence, propagation_operators, backward_operators = self.__get_operators(initial_state)
+            propagation_operators, backward_operators = self.__get_operators(initial_state)
             _, fidelity_s = self.__evaluate_fidelity(initial_state)
             self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
             status_f, fidelity_e = self.__evaluate_fidelity(initial_state)
@@ -156,7 +156,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 self.__e_s = self.__e_e
                 iteration += 1
 
-        return self.__e_e
+        return self.__ideal_state, self.__e_e
 
     def __get_step_evolution_operator(self, init_state: np.array, pulse_sequence: np.array):
         pulse_evolution = self.get_evolution(pulse_sequence)
@@ -183,7 +183,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         hermit_pulse_operators_sequence = self.get_hermit_sequence(pulse_operators_sequence)
         propagation_operators = self.__get_propagation_operators(initial_state, pulse_operators_sequence)
         backward_operators = self.__get_backward_operators(hermit_pulse_operators_sequence)
-        return pulse_operators_sequence, propagation_operators, backward_operators
+        return propagation_operators, backward_operators
 
     def __evaluate_fidelity(self, initial_state: np.array):
         self.__inv_pulses = np.real(self.__inv_pulses)
@@ -196,7 +196,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         return
 
     def __get_control_hamiltonian(self):
-        idn = np.identity(2)
-        h = idn + np.array([[1, 0], [0, -1]])
-        self.__ctrl_h = np.kron(h, idn)
+        h = self.idn + np.array([[1, 0], [0, -1]])
+        # self.__ctrl_h = np.kron(h, idn)
+        self.__ctrl_h = h
         return

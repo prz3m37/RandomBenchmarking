@@ -4,10 +4,12 @@ import numpy as np
 class NumericalMethods:
     dt = None
     ctr_h = None
+    h_bar = None
 
     @classmethod
     def load_numerical_settings(cls, settings: dict, control_hamiltonian:np.array):
-        cls.dt = settings["time_tc"]
+        cls.dt = 0.41 * 10**(-9)
+        cls.h_bar = settings["h_bar"]
         cls.ctr_h = control_hamiltonian
         return
 
@@ -21,11 +23,12 @@ class NumericalMethods:
 
     @classmethod
     def get_matrix_product(cls, operator_a: np.array, operator_b: np.array):
-        return np.trace(np.dot(np.conj(operator_a).T, operator_b))
+        return np.trace(np.dot(np.conj(operator_a.T), operator_b))
 
     @classmethod
     def get_gradient(cls, back_operators: np.array, prop_operators: np.array):
-        grad = -1 * np.array([cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.ctr_h, prop_op))
+        grad = -1 * np.array([cls.get_matrix_product(back_op, 1j * (cls.dt / cls.h_bar) * cls.get_commutator(cls.ctr_h,
+                                                                                                             prop_op))
                               for back_op, prop_op in zip(back_operators, prop_operators)])
         return grad
 
@@ -35,4 +38,4 @@ class NumericalMethods:
 
     @classmethod
     def get_hermit_sequence(cls, operator_sequence: np.array):
-        return np.array([np.conj(operator).T for operator in operator_sequence])
+        return np.array([np.conj(operator.T) for operator in operator_sequence])

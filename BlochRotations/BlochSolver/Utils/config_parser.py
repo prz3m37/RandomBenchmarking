@@ -9,6 +9,7 @@ class ConfigParser:
                         "learning_rate": 0.,
                         "learning_incrementation": 0.,
                         "learning_decrementation": 0.,
+                        "down_error": 0.,
                         "error": 0.,
                         }
 
@@ -46,6 +47,7 @@ class ConfigParser:
         cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 6.582119569 * 10**(-16))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
+        cls.numerical_params["down_error"] = float(cls.numerical_params["down_error"])
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
             if cls.numerical_params["learning_decrementation"] != "" else None
         cls.numerical_params["learning_incrementation"] = float(cls.numerical_params["learning_incrementation"]) \

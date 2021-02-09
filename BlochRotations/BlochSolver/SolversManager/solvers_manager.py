@@ -35,9 +35,9 @@ class Solvers:
         print("############################################",
               "\n ---> Solver --", solver_type, "-- running for: "
               , "\n############################################"
-              , " \n ---> Target rotation: ", angles, axes
+              , " \n ---> Target rotation: ", np.rad2deg(angles), "around: ", axes
               , "\n ---> Initial state:   ",
-              "[", initial_state[0], initial_state[1], initial_state[2], initial_state[3],"]"
+              "[", initial_state[0], initial_state[1], "]"
               , "\n ---> Initial pulses:  ", "[", initial_pulses[0], "...", initial_pulses[0], "]")
         return
 

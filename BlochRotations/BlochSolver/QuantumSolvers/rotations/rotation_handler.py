@@ -21,13 +21,14 @@ class RotationHandler:
     def apply_filter_to_pulse(cls, guess_pulse: np.array):
         return np.fromiter((cls.__filter(pulse) for pulse in guess_pulse), np.float)
 
+    # TODO: Verify rotation operator !
     @classmethod
     def __get_evolution_operator(cls, pulse: float):
-        arg = (s.settings["time_tc"] / s.settings["h_bar"]) * \
-              (s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"]) * 0.5
-        j_arg = (s.settings["time_tc"] / s.settings["h_bar"]) * cls.__get_pulse_detuning(pulse)
-        return np.array([[np.cos(arg), -1j * np.sin(arg)],
-                         [-1j * np.sin(arg) * np.exp(2j * j_arg), np.cos(arg) * np.exp(2j * j_arg)]])
+        arg = (0.41 * 10**(-9) / s.settings["h_bar"]) * \
+              (s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"])* 0.5
+        j_arg = (0.41 * 10**(-9) / s.settings["h_bar"]) * cls.__get_pulse_detuning(pulse)
+        return np.array([[np.cos(arg * 0.5) * np.exp(-1j * j_arg * 0.5), -1j * np.sin(arg)],
+                         [-1j * np.sin(arg), np.cos(arg * 0.5) * np.exp(1j * j_arg * 0.5)]])
 
     @classmethod
     def get_pulse_operators(cls, pulses: np.array):
@@ -69,7 +70,7 @@ class RotationHandler:
 
     @classmethod
     def get_state(cls, evolution_operator: np.array, init_state: np.array):
-        evolution_operator = np.kron(evolution_operator, cls.idn)
+        # evolution_operator = np.kron(evolution_operator, cls.idn)
         return np.dot(evolution_operator, init_state)
 
     @staticmethod
@@ -82,8 +83,10 @@ class RotationHandler:
 
     @staticmethod
     def __get_y_rotation(alpha: float):
-        return np.array([[np.cos(alpha / 2), - np.sin(alpha / 2)], [-np.sin(alpha / 2), np.cos(alpha / 2)]])
+        return np.array([[np.cos(alpha / 2), - np.sin(alpha / 2)],
+                         [np.sin(alpha / 2), np.cos(alpha / 2)]])
 
     @staticmethod
     def __get_z_rotation(alpha: float):
-        return np.array([[np.exp(1j * alpha / 2), 0], [0, np.exp(1j * alpha / 2)]])
+        return np.array([[np.exp(-1j * alpha / 2), 0],
+                         [0, np.exp(1j * alpha / 2)]])

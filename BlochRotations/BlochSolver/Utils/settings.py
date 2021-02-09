@@ -11,4 +11,5 @@ numerical_settings = {"number_of_iterations": None,
                       "learning_incrementation": None,
                       "learning_decrementation": None,
                       "error": None,
+                      "down_error": None
                       }
