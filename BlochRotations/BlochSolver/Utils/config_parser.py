@@ -2,6 +2,7 @@ class ConfigParser:
 
     params = {"magnetic_field": 0.,
               "time_tc": 0.,
+              "pulse_time": 0,
               "dg_factor": 0.}
 
     numerical_params = {"number_of_iterations": 0.,
@@ -45,6 +46,7 @@ class ConfigParser:
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
         cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 6.582119569 * 10**(-16))
+        cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 **(-9))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
         cls.numerical_params["down_error"] = float(cls.numerical_params["down_error"])

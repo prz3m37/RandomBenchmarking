@@ -24,9 +24,9 @@ class RotationHandler:
     # TODO: Verify rotation operator !
     @classmethod
     def __get_evolution_operator(cls, pulse: float):
-        arg = (0.41 * 10**(-9) / s.settings["h_bar"]) * \
+        arg = (s.settings["pulse_time"] / s.settings["h_bar"]) * \
               (s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"])* 0.5
-        j_arg = (0.41 * 10**(-9) / s.settings["h_bar"]) * cls.__get_pulse_detuning(pulse)
+        j_arg = (s.settings["pulse_time"] / s.settings["h_bar"]) * cls.__get_pulse_detuning(pulse)
         return np.array([[np.cos(arg * 0.5) * np.exp(-1j * j_arg * 0.5), -1j * np.sin(arg)],
                          [-1j * np.sin(arg), np.cos(arg * 0.5) * np.exp(1j * j_arg * 0.5)]])
 

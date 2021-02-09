@@ -41,6 +41,7 @@ class Utils:
         settings.settings["magnetic_field"] = cls.cfg_parser.params["magnetic_field"]
         settings.settings["dg_factor"] = cls.cfg_parser.params["dg_factor"]
         settings.settings["time_tc"] = cls.cfg_parser.params["time_tc"]
+        settings.settings["pulse_time"] = cls.cfg_parser.params["pulse_time"]
         return
 
     @classmethod

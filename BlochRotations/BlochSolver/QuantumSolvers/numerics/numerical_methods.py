@@ -8,7 +8,7 @@ class NumericalMethods:
 
     @classmethod
     def load_numerical_settings(cls, settings: dict, control_hamiltonian:np.array):
-        cls.dt = 0.41 * 10**(-9)
+        cls.dt = settings["pulse_time"]
         cls.h_bar = settings["h_bar"]
         cls.ctr_h = control_hamiltonian
         return
