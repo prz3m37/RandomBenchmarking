@@ -37,7 +37,7 @@ class Solvers:
               , "\n############################################"
               , " \n ---> Target rotation: ", np.rad2deg(angles), "around: ", axes
               , "\n ---> Initial state:   ",
-              "[", initial_state[0], initial_state[1], "]"
+              "[", np.round(initial_state[0], 3), np.round(initial_state[1], 3), "]"
               , "\n ---> Initial pulses:  ", "[", initial_pulses[0], "...", initial_pulses[0], "]")
         return
 

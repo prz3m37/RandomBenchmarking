@@ -3,14 +3,14 @@ import numpy as np
 
 class NumericalMethods:
     dt = None
-    ctr_h = None
     h_bar = None
+    h_k = None
 
     @classmethod
-    def load_numerical_settings(cls, settings: dict, control_hamiltonian:np.array):
+    def load_numerical_settings(cls, control_hamiltonian: np.array, settings: dict):
         cls.dt = settings["pulse_time"]
         cls.h_bar = settings["h_bar"]
-        cls.ctr_h = control_hamiltonian
+        cls.h_k = control_hamiltonian
         return
 
     @classmethod
@@ -27,9 +27,10 @@ class NumericalMethods:
 
     @classmethod
     def get_gradient(cls, back_operators: np.array, prop_operators: np.array):
-        grad = -1 * np.array([cls.get_matrix_product(back_op, 1j * (cls.dt / cls.h_bar) * cls.get_commutator(cls.ctr_h,
+        grad = -1 * np.array([cls.get_matrix_product(back_op, 1j * (cls.dt / cls.h_bar) * cls.get_commutator(cls.h_k,
                                                                                                              prop_op))
                               for back_op, prop_op in zip(back_operators, prop_operators)])
+
         return grad
 
     @classmethod

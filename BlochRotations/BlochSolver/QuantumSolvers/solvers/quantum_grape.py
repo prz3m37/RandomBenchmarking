@@ -13,11 +13,10 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self.__settings = settings.settings
         self.__numerical_settings = settings.numerical_settings
         self.__l_rate = self.__numerical_settings["learning_rate"]
-        self.__get_control_hamiltonian()
-        self.load_numerical_settings(self.__settings, self.__ctrl_h)
+        h_k = self.get_control_hamiltonian()
+        self.load_numerical_settings(h_k, self.__settings)
         self.__sc.load_control_settings(self.__numerical_settings)
 
-        self.__ctrl_h = None
         self.__n_steps = None
         self.__target_operator = None
         self.__ideal_state = None
@@ -47,8 +46,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         iteration = 0
         while True:
             propagation_operators, backward_operators = self.__get_operators(initial_state)
-            self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
-            # self.__e_e = np.clip(self.__e_e, a_min=0.0015, a_max=0.004)
+            self.__e_e = self.__e_s + (self.__l_rate * self.get_gradient(backward_operators, propagation_operators))
 
             self.__get_order(self.__e_e)
             status_f, fidelity = self.__evaluate_fidelity(initial_state)
@@ -77,8 +75,9 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         while True:
             propagation_operators, backward_operators = self.__get_operators(initial_state)
             _, fidelity_s = self.__evaluate_fidelity(initial_state)
-            self.__e_e = self.__e_s + self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
+            self.__e_e = self.__e_s - self.__l_rate * self.get_gradient(backward_operators, propagation_operators)
 
+            self.__get_order(self.__e_e)
             status_f, fidelity_e = self.__evaluate_fidelity(initial_state)
             self.__l_rate = self.__sc.update_learning_rate(fidelity_s, fidelity_e, self.__l_rate)
 
@@ -193,10 +192,4 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def __get_order(self, pulses: np.array):
         self.__inv_pulses = pulses[::-1]
-        return
-
-    def __get_control_hamiltonian(self):
-        h = self.idn + np.array([[1, 0], [0, -1]])
-        # self.__ctrl_h = np.kron(h, idn)
-        self.__ctrl_h = h
         return

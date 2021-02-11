@@ -4,7 +4,7 @@ settings = {"results_file_path": "",
             "time_tc": 0.,
             "pulse_time": 0,
             "dg_factor": 0,
-            "h_bar": 6.582119569 * 10**(-16)}
+            "h_bar": 4.135667696 * 10**(-15)}
 
 numerical_settings = {"number_of_iterations": None,
                       "time_of_termination": None,

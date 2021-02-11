@@ -7,23 +7,20 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
 
     @classmethod
     def convert_bloch_coordinates(cls, pulses: np.array, init_state: np.array, target_state: np.array):
+        pulses = pulses[::-1]
         bloch_states = cls.get_pulse_states(pulses, init_state)
         init_vector = cls.get_real_vector(init_state)
         target_final_state = cls.get_real_vector(target_state)
         real_vectors = cls.get_pulse_real_vectors(bloch_states)
         real_vectors = np.concatenate((np.array([init_vector]), real_vectors), axis=0)
-        return init_vector, target_final_state, real_vectors.T
+        return init_vector.T, target_final_state.T, real_vectors.T
 
     @classmethod
     def get_real_vector(cls, bloch_state: np.array):
-        alpha = 2 * np.arccos(np.real(bloch_state[0]))
-        if alpha == 0:
-            phi = 0
-        else:
-            phi = np.real(- 1j * np.log(bloch_state[1] / np.sin(alpha / 2)))
-        x = np.cos(phi) * np.sin(alpha)
-        y = np.sin(phi) * np.sin(alpha)
-        z = np.cos(alpha)
+        density_m = cls.get_density_operator(bloch_state)
+        x = 2 * np.real(density_m[0][1])
+        y = 2 * np.imag(density_m[1][0])
+        z = density_m[0][00] - density_m[1][1]
         return np.array([x, y, z])
 
     @classmethod
@@ -32,10 +29,11 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
 
     @classmethod
     def get_pulse_states(cls, pulses: np.array, init_state: np.array):
-        N = len(pulses)
+        n = len(pulses)
         pulse_operators = cls.get_pulse_operators(pulses)
         evolution_operators = np.array([cls.get_evolution(pulse_operators[:step + 1])
-                                        for step in range(N)])
+                                        for step in range(n)])
+
         bloch_states = np.array([cls.get_state(evolution_operator, init_state)
                                  for evolution_operator in evolution_operators])
         return bloch_states

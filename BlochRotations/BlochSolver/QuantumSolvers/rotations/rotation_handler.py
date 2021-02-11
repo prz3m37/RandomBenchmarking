@@ -3,9 +3,12 @@ from BlochSolver.Utils import settings as s
 from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 
-# TODO: Maybe different instances will be needed for multiprocessing
 class RotationHandler:
     idn = np.identity(2)
+    # s.settings["time_tc"] = 1.5e-5
+    # s.settings["magnetic_field"] = 0.001
+    # s.settings["pulse_time"] = 2.41 * 10 **(-9)
+    # s.settings["dg_factor"] = 1.71
 
     @classmethod
     def __get_pulse_detuning(cls, pulse: float):
@@ -24,11 +27,18 @@ class RotationHandler:
     # TODO: Verify rotation operator !
     @classmethod
     def __get_evolution_operator(cls, pulse: float):
-        arg = (s.settings["pulse_time"] / s.settings["h_bar"]) * \
-              (s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"])* 0.5
-        j_arg = (s.settings["pulse_time"] / s.settings["h_bar"]) * cls.__get_pulse_detuning(pulse)
-        return np.array([[np.cos(arg * 0.5) * np.exp(-1j * j_arg * 0.5), -1j * np.sin(arg)],
-                         [-1j * np.sin(arg), np.cos(arg * 0.5) * np.exp(1j * j_arg * 0.5)]])
+        j_f = cls.__get_pulse_detuning(pulse)
+        f_term = s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"]
+        omega = np.sqrt(j_f**2 + f_term**2)
+        phi = (omega * s.settings["pulse_time"]) / (2 * s.settings["h_bar"])
+        alpha = - j_f / omega
+        beta = f_term / omega
+        return np.array([[np.cos(phi) + 1j * alpha * np.sin(phi), -1j * beta * np.sin(phi)],
+                         [-1j * beta * np.sin(phi), np.cos(phi) - 1j * alpha * np.sin(phi)]])
+
+    @classmethod
+    def get_control_hamiltonian(cls):
+        return cls.__get_pauli_z()
 
     @classmethod
     def get_pulse_operators(cls, pulses: np.array):
@@ -90,3 +100,15 @@ class RotationHandler:
     def __get_z_rotation(alpha: float):
         return np.array([[np.exp(-1j * alpha / 2), 0],
                          [0, np.exp(1j * alpha / 2)]])
+
+    @staticmethod
+    def __get_pauli_x():
+        return np.array([[0, 1], [1, 0]])
+
+    @staticmethod
+    def __get_pauli_y():
+        return np.array([[0, -1j], [1j, 0]])
+
+    @staticmethod
+    def __get_pauli_z():
+        return np.array([[1, 0], [0, -1]])

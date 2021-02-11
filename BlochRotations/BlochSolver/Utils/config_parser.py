@@ -45,7 +45,7 @@ class ConfigParser:
     def convert_data(cls):
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
-        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 6.582119569 * 10**(-16))
+        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 4.135667696 * 10**(-15))
         cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 **(-9))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])

@@ -3,6 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+
 warnings.filterwarnings('ignore')
 
 
@@ -27,9 +28,9 @@ class BlochPlotter:
             return
 
     @staticmethod
-    def __plot_evolution(pulse_vectors: np.array, init_vector: np.array, target_state:np.array):
+    def __plot_evolution(pulse_vectors: np.array, init_vector: np.array, target_state: np.array):
 
-        phi, theta = np.mgrid[0:2*np.pi:30j, 0:np.pi:30j]
+        phi, theta = np.mgrid[0:2 * np.pi:20j, 0:np.pi:20j]
         x_cor, y_cor, z_cor = pulse_vectors
         x_init, y_init, z_init = init_vector
         x_target, y_target, z_target = target_state
@@ -40,11 +41,15 @@ class BlochPlotter:
 
         fig = plt.figure(figsize=(17, 12))
         ax = fig.gca(projection='3d')
-        ax.plot_wireframe(x_sphere, y_sphere, z_sphere, color="darkgrey", alpha=0.1)
-        ax.scatter(x_init, y_init, z_init, color="blue", s=40)
-        ax.scatter(x_target, y_target, z_target, color="green", s=40)
-        ax.scatter(x_cor[-1], y_cor[-1], z_cor[-1], color="black", s=40)
-        ax.plot3D(x_cor, y_cor, z_cor, "--D", color="red")
+        ax.plot_wireframe(x_sphere, y_sphere, z_sphere, color="black", alpha=0.1)
+        ax.scatter(x_init, y_init, z_init, color="blue", s=40, label='Init state')
+        ax.scatter(x_target, y_target, z_target, color="green", s=40, label='Final target point')
+        ax.scatter(x_cor[-1], y_cor[-1], z_cor[-1], color="black", s=40, label='Last pulse state')
+        ax.plot3D(x_cor, y_cor, z_cor, "--D", color='red', label="Pulse evolution")
+        ax.set_xlabel('$X$', fontsize=20)
+        ax.set_ylabel('$Y$', fontsize=20)
+        ax.set_zlabel(r'$Z$', fontsize=20, )
+        ax.legend()
         plt.show()
 
         return
