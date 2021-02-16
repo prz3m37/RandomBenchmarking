@@ -3,7 +3,9 @@ from BlochSolver.SolversManager import settings_initializer as si
 from BlochSolver.Utils import utils
 import numpy as np
 import time
-class Solvers:
+
+
+class SolversManager:
 
     def __init__(self):
         self.__solver = None

@@ -5,14 +5,26 @@ from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 class RotationHandler:
     idn = np.identity(2)
-    # s.settings["time_tc"] = 1.5e-5
-    # s.settings["magnetic_field"] = 0.001
-    # s.settings["pulse_time"] = 2.41 * 10 **(-9)
-    # s.settings["dg_factor"] = 1.71
 
     @classmethod
-    def __get_pulse_detuning(cls, pulse: float):
-        return np.sqrt((0.25 * pulse ** 2) + (2 * s.settings["time_tc"]**2)) - 0.5 * pulse
+    def get_pulse_detuning(cls, pulse: float):
+        return np.sqrt((0.25 * pulse ** 2) + (2 * s.settings["time_tc"] ** 2)) - 0.5 * pulse
+
+    @classmethod
+    def get_pulse_detunings(cls, pulses: np.array):
+        return np.array([cls.get_pulse_detuning(pulse) for pulse in pulses])
+
+    @classmethod
+    def __get_pulse_arg(cls, pulse_detuning: float):
+        return (2 * s.settings["time_tc"] ** 2 - pulse_detuning ** 2) / pulse_detuning
+
+    @classmethod
+    def get_pulse_args(cls, pulse_detunings: np.array):
+        return np.array([cls.__get_pulse_arg(pulse_detuning) for pulse_detuning in pulse_detunings])
+
+    @classmethod
+    def __get_pulse_arg(cls, pulse_detuning: float):
+        return (2 * s.settings["time_tc"] ** 2 - pulse_detuning ** 2) / pulse_detuning
 
     # TODO: Apply Daniel filter function
     @classmethod
@@ -26,10 +38,10 @@ class RotationHandler:
 
     # TODO: Verify rotation operator !
     @classmethod
-    def __get_evolution_operator(cls, pulse: float):
-        j_f = cls.__get_pulse_detuning(pulse)
+    def __get_rotation_operator(cls, pulse: float):
+        j_f = cls.get_pulse_detuning(pulse)
         f_term = s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"]
-        omega = np.sqrt(j_f**2 + f_term**2)
+        omega = np.sqrt(j_f ** 2 + f_term ** 2)
         phi = (omega * s.settings["pulse_time"]) / (2 * s.settings["h_bar"])
         alpha = - j_f / omega
         beta = f_term / omega
@@ -41,8 +53,8 @@ class RotationHandler:
         return cls.__get_pauli_z()
 
     @classmethod
-    def get_pulse_operators(cls, pulses: np.array):
-        return np.array([cls.__get_evolution_operator(pulse) for pulse in pulses])
+    def get_rotation_operators(cls, pulses: np.array):
+        return np.array([cls.__get_rotation_operator(pulse) for pulse in pulses])
 
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):
@@ -80,7 +92,6 @@ class RotationHandler:
 
     @classmethod
     def get_state(cls, evolution_operator: np.array, init_state: np.array):
-        # evolution_operator = np.kron(evolution_operator, cls.idn)
         return np.dot(evolution_operator, init_state)
 
     @staticmethod

@@ -30,8 +30,8 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
     @classmethod
     def get_pulse_states(cls, pulses: np.array, init_state: np.array):
         n = len(pulses)
-        pulse_operators = cls.get_pulse_operators(pulses)
-        evolution_operators = np.array([cls.get_evolution(pulse_operators[:step + 1])
+        rotation_operators = cls.get_rotation_operators(pulses)
+        evolution_operators = np.array([cls.get_evolution(rotation_operators[:step + 1])
                                         for step in range(n)])
 
         bloch_states = np.array([cls.get_state(evolution_operator, init_state)

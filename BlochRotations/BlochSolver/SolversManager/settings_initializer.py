@@ -17,12 +17,13 @@ class SettingsInitializer:
         pass
 
     def __initialize_numerical_settings(self):
-        self.__set_termination_time()
         self.__set_max_iteration()
         self.__set_init_learning_rate()
         self.__set_learning_incrementation()
         self.__set_learning_decrementation()
         self.__set_termination_error()
+        self.__set_termination_down_error()
+        self.__set_penalty_level()
         return
 
     def __save_numerical_settings(self):
@@ -50,12 +51,17 @@ class SettingsInitializer:
 
     def __set_termination_error(self):
         if self.__num_settings["error"] is None:
-            self.__num_settings["error"] = 1e-5
+            self.__num_settings["error"] = 0.99
         return
 
-    def __set_termination_time(self):
-        if self.__num_settings["time_of_termination"] is None:
-            self.__num_settings["time_of_termination"] = np.inf
+    def __set_termination_down_error(self):
+        if self.__num_settings["down_error"] is None:
+            self.__num_settings["down_error"] = 0.95
+        return
+
+    def __set_penalty_level(self):
+        if self.__num_settings["gamma"] is None:
+            self.__num_settings["gamma"] = 1
         return
 
     def __set_max_iteration(self):

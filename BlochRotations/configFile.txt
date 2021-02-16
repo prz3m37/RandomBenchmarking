@@ -1,25 +1,29 @@
 ############## PHYSICAL SETTINGS ##############
 magnetic_field=0.001
 time_tc=2.56
-pulse_time=0.41
+pulse_time=2
 dg_factor=1.71
 ############## NUMERICAL SETTINGS ##############
-number_of_iterations=100
-time_of_termination=1000.
-learning_incrementation=0.5
+number_of_iterations=1500
+learning_incrementation=2
 learning_decrementation=0.5
 learning_rate=1
 down_error=0.98
 error=0.999
+e_min=0.0015
+e_max=0.004
+gamma=1
 ############## TYPES INFO ##############
 magnetic_filed[float]
 time_tc[float]
 pulse_time[float]
 dg_factor[float]
 number_of_iterations[int]
-time_of_termination[sec]
 learning_incrementation[float]
 learning_decrementation[float]
 learning_rate[float]
 down_error[float]
 error[float]
+e_min[float]
+e_max[float]
+gamma[float]

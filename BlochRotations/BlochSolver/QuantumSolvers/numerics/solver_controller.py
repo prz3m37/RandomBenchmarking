@@ -2,7 +2,7 @@ import numpy as np
 from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 
 
-class SimulationController:
+class SolverController:
     num_methods = nm.NumericalMethods
     error = None
     down_error = None
@@ -16,7 +16,6 @@ class SimulationController:
         cls.error = control_settings["error"]
         cls.down_error = control_settings["down_error"]
         cls.number_of_iterations = control_settings["number_of_iterations"]
-        cls.time_of_termination = control_settings["time_of_termination"]
         cls.learning_incrementation = control_settings["learning_incrementation"]
         cls.learning_decrementation = control_settings["learning_decrementation"]
         return
@@ -30,14 +29,13 @@ class SimulationController:
             return False, fidelity
 
     @classmethod
-    def update_learning_rate(cls, fidelity_s: float = None, fidelity_e: float = None, learning_rate: float = None):
-        # if fidelity_e >= cls.down_error:
-        #     return 1 - fidelity_e
-        # elif fidelity_s > fidelity_e:
-        #     return learning_rate * cls.learning_incrementation
-        # else:
-        #     return learning_rate
-        return 1-fidelity_e
+    def update_learning_rate(cls, fidelity_s: float, fidelity_e: float, learning_rate: float):
+        if fidelity_s < fidelity_e:
+            return learning_rate * cls.learning_decrementation
+        elif fidelity_s > fidelity_e:
+            return learning_rate * cls.learning_incrementation
+        else:
+            return learning_rate
 
     @classmethod
     def check_gradient_condition(cls, gradient: np.array):

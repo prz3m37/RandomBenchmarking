@@ -7,10 +7,12 @@ settings = {"results_file_path": "",
             "h_bar": 4.135667696 * 10**(-15)}
 
 numerical_settings = {"number_of_iterations": None,
-                      "time_of_termination": None,
                       "learning_rate": None,
                       "learning_incrementation": None,
                       "learning_decrementation": None,
                       "error": None,
-                      "down_error": None
+                      "down_error": None,
+                      "e_min": None,
+                      "e_max": None,
+                      "gamma": None
                       }
