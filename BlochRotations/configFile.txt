@@ -1,13 +1,13 @@
 ############## PHYSICAL SETTINGS ##############
 magnetic_field=0.001
 time_tc=2.56
-pulse_time=2
+pulse_time=0.41
 dg_factor=1.71
 ############## NUMERICAL SETTINGS ##############
-number_of_iterations=1500
+number_of_iterations=1000
 learning_incrementation=2
 learning_decrementation=0.5
-learning_rate=1
+learning_rate=0.1
 down_error=0.98
 error=0.999
 e_min=0.0015

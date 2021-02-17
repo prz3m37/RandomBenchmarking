@@ -36,7 +36,6 @@ class RotationHandler:
     def apply_filter_to_pulse(cls, guess_pulse: np.array):
         return np.fromiter((cls.__filter(pulse) for pulse in guess_pulse), np.float)
 
-    # TODO: Verify rotation operator !
     @classmethod
     def __get_rotation_operator(cls, pulse: float):
         j_f = cls.get_pulse_detuning(pulse)
@@ -45,8 +44,8 @@ class RotationHandler:
         phi = (omega * s.settings["pulse_time"]) / (2 * s.settings["h_bar"])
         alpha = - j_f / omega
         beta = f_term / omega
-        return np.array([[np.cos(phi) + 1j * alpha * np.sin(phi), -1j * beta * np.sin(phi)],
-                         [-1j * beta * np.sin(phi), np.cos(phi) - 1j * alpha * np.sin(phi)]])
+        return np.array([[np.cos(phi) + (1j * alpha * np.sin(phi)), -1j * beta * np.sin(phi)],
+                         [-1j * beta * np.sin(phi), np.cos(phi) - (1j * alpha * np.sin(phi))]])
 
     @classmethod
     def get_control_hamiltonian(cls):
@@ -58,6 +57,7 @@ class RotationHandler:
 
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):
+        # print(pulse_sequence.shape)
         if pulse_sequence.shape[0] == 1:
             return pulse_sequence[0]
         else:

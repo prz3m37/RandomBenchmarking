@@ -55,7 +55,7 @@ class BlochPlotter:
         return
 
     def __plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
-        diff = pulses_init - pulses_final
+        diff = pulses_final - pulses_init
         sns.set_style("dark")
         plt.figure(figsize=(17, 12))
         plt.subplots_adjust(hspace=0.5)

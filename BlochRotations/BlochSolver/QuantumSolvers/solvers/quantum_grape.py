@@ -7,136 +7,103 @@ import numpy as np
 class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
-        self.__sc = sc.SolverController
-        self.__utils = utils.Utils
-        self.__settings = settings.settings
-        self.__num_sets = settings.numerical_settings
-        self.__l_rate = self.__num_sets["learning_rate"]
+        self._sc = sc.SolverController
+        self._utils = utils.Utils
+        self._settings = settings.settings
+        self._num_sets = settings.numerical_settings
+        self._l_rate = self._num_sets["learning_rate"]
         h_k = self.get_control_hamiltonian()
-        self.load_numerical_settings(h_k, self.__settings, self.__num_sets)
-        self.__sc.load_control_settings(self.__num_sets)
+        self.load_numerical_settings(h_k, self._settings, self._num_sets)
+        self._sc.load_control_settings(self._num_sets)
 
-        self.__n_steps = None
-        self.__target_operator = None
-        self.__ideal_state = None
-        self.__inv_pulses = None
-        self.__j_func = None
-        self.__pulses = None
-        self.__return = None
+        self._n = None
+        self._target_operator = None
+        self._ideal_state = None
+        self._inv_pulses = None
+        self._j = None
+        self._pulses = None
+        self._return = None
+
+        self._fidelity = None
+        self._fidelity_status = None
 
     def grape_solver(self, algorithm_type: str = None, **kwargs):
         if algorithm_type is None or algorithm_type == "default":
-            self.__utils.save_log("[INFO]: GRAPE algorithm - default, iteration termination condition")
-            return self.__get_grape_solver(**kwargs)
+            self._utils.save_log("[INFO]: GRAPE algorithm - default, iteration termination condition")
+            return self._get_grape(**kwargs)
         elif algorithm_type == "lr":
-            self.__utils.save_log("[INFO]: GRAPE algorithm - learning rate, iteration termination condition")
-            return self.__get_grape_solver_learning_rate(**kwargs)
+            self._utils.save_log("[INFO]: GRAPE algorithm - learning rate, iteration termination condition")
+            return  # self._get_grape_solver_learning_rate(**kwargs)
 
-    def __get_grape_solver(self, initial_pulses: np.array, angles: np.array, axes: np.array, initial_state: np.array):
-        self.__return = self.__pulses = initial_pulses
-        self.__n_steps = initial_pulses.shape[0]
-        self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Target state:    ", np.around(self.__ideal_state, 3))
+    def _get_grape(self, initial_pulses: np.array, angles: np.array, axes: np.array, initial_state: np.array):
+        self._return = self._pulses = initial_pulses
+        self._n = initial_pulses.shape[0]
+        self._ideal_state, self._target_operator = self.get_target_state(angles, axes, initial_state)
+        print(" ---> Target state:    ", np.around(self._ideal_state, 3))
         iteration = 0
         while True:
-            self.__j_func = self.get_pulse_detunings(self.__pulses)
-            forward_operators, backward_operators = self.__get_operators(initial_state)
-            self.__j_func = self.__j_func + (self.__l_rate * self.get_penalty_gradient(backward_operators,
-                                                                                       forward_operators,
-                                                                                       self.__j_func))
-            self.__pulses = self.get_pulse_args(self.__j_func)
-            self.__get_order(self.__pulses)
-            status_f, fidelity = self.__evaluate_fidelity(initial_state)
-            results_msg = str(iteration) + " PULSES: " + str(np.around(self.__pulses, 3)) + " FID: " + \
-                          str(np.round(fidelity, 5))
+            print("_____________________________ITERATION_____________________________", iteration)
+            print("fidelity:", self._fidelity)
+            print("pulses:", self._pulses)
+            self._get_order(self._pulses)
+            f_operator, b_operator = self._evaluate_operators(initial_state)
+            self._j = self.get_pulse_detunings(self._pulses)
+            self._j = self._j + (self._l_rate * self.get_penalty_gradient(b_operator, f_operator, self._j))
+            self._pulses = self.get_pulse_args(self._j)
+            self._get_order(self._pulses)
+            self._evaluate_fidelity(initial_state)
 
-            self.__utils.save_result(results_msg)
-            print("pulses:", fidelity, self.__pulses)
-            print("j:",self.__j_func)
-            if status_f:
-                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
+
+            if self._fidelity_status:
+                self._utils.save_log("[INFO]: Fidelity condition fulfilled")
                 break
-            elif self.__sc.check_iteration_condition(iteration):
-                self.__utils.save_log("[INFO]: Iteration condition fulfilled")
+            elif self._sc.check_iteration_condition(iteration):
+                self._utils.save_log("[INFO]: Iteration condition fulfilled")
                 break
             else:
-                self.__update_pulse()
+                self._update_pulse()
                 iteration += 1
+        return self._ideal_state, self._return
 
-        return self.__ideal_state, self.__return
+    def _evaluate_fidelity(self, initial_state: np.array):
+        rotation_operators_sequence = self.get_rotation_operators(self._inv_pulses)
+        density_operator = self.get_step_density_operator(initial_state, rotation_operators_sequence)
+        self._fidelity_status, self._fidelity = self._sc.get_fidelity(self._target_operator, density_operator)
+        return
 
-    def __get_grape_solver_learning_rate(self, initial_pulses: np.array, angles: np.array, axes: np.array,
-                                         initial_state: np.array):
-        self.__return = self.__pulses = initial_pulses
-        self.__n_steps = initial_pulses.shape[0]
-        self.__ideal_state, self.__target_operator = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Target state:    ", np.around(self.__ideal_state, 3))
-        iteration = 0
-        while True:
-            self.__j_func = self.get_pulse_detunings(self.__pulses)
-            forward_operators, backward_operators = self.__get_operators(initial_state)
-            _, fidelity_s = self.__evaluate_fidelity(initial_state)
-            self.__j_func = self.__j_func + (self.__l_rate * self.get_penalty_gradient(backward_operators,
-                                                                                       forward_operators,
-                                                                                       self.__j_func))
-            self.__pulses = self.get_pulse_args(self.__j_func)
-            self.__get_order(self.__pulses)
-            status_f, fidelity_e = self.__evaluate_fidelity(initial_state)
-            self.__l_rate = self.__sc.update_learning_rate(fidelity_s, fidelity_e, self.__l_rate)
-            results_msg = str(iteration) + " PULSES: " + str(np.around(self.__pulses, 3)) + \
-                          " FID: " + str(np.round(fidelity_e, 3)) + " L_RATE: " + str(self.__l_rate)
-            self.__utils.save_result(results_msg)
-            print(self.__l_rate, self.__pulses)
-            if status_f:
-                self.__utils.save_log("[INFO]: Fidelity condition fulfilled")
-                break
-            elif self.__sc.check_iteration_condition(iteration):
-                self.__utils.save_log("[INFO]: Iteration condition fulfilled")
-                break
-            else:
-                self.__update_pulse()
-                iteration += 1
-        return self.__ideal_state, self.__return
+    def _evaluate_operators(self, initial_state: np.array):
+        rotation_sequence = self.get_rotation_operators(self._inv_pulses)
+        hermit_operators = self.get_hermit_sequence(rotation_sequence)
+        fwd_operators = self._evaluate_forward_operators(initial_state, rotation_sequence)
+        bwd_operators = self._evaluate_backward_operators(hermit_operators)
+        return fwd_operators, bwd_operators
 
-    def __get_step_rotation_operator(self, init_state: np.array, pulse_sequence: np.array):
-        rotation_evolution = self.get_evolution(pulse_sequence)
-        rotated_state = self.get_state(rotation_evolution, init_state)
-        return self.get_density_operator(rotated_state)
-
-    def __get_forward_operators(self, init_state: np.array, operators_sequence: np.array):
-        forward_operators = np.array([
-            self.__get_step_rotation_operator(init_state, operators_sequence[-step - 1:])
-            for step in range(self.__n_steps)])
-        return forward_operators
-
-    def __get_backward_operators(self, hermit_operators_sequence: np.array):
-        hermit_operators_sequence = hermit_operators_sequence[::-1]
+    def _evaluate_backward_operators(self, hermit_operators:np.array):
+        reverse_hermit_operators = hermit_operators[::-1]
         backward_operators = np.array([
-            self.__get_step_rotation_operator(self.__ideal_state, hermit_operators_sequence[step:])
-            if step < self.__n_steps else self.__target_operator
-            for step in range(1, self.__n_steps + 1)], dtype=object)
+            self._get_step_rotation(self._ideal_state, reverse_hermit_operators[step:])
+            if step < self._n else self._target_operator
+            for step in range(1, self._n + 1)], dtype=object)
         return backward_operators
 
-    def __get_operators(self, initial_state: np.array):
-        self.__get_order(self.__pulses)
-        rotation_operators_sequence = self.get_rotation_operators(self.__inv_pulses)
-        hermit_rotation_operators_sequence = self.get_hermit_sequence(rotation_operators_sequence)
-        forward_operators = self.__get_forward_operators(initial_state, rotation_operators_sequence)
-        backward_operators = self.__get_backward_operators(hermit_rotation_operators_sequence)
-        return forward_operators, backward_operators
+    def _evaluate_forward_operators(self, initial_state: np.array, rotation_sequence: np.array):
+        forward_operators = np.array([
+            self._get_step_rotation(initial_state, rotation_sequence[-r_length - 1:])
+            for r_length in range(self._n)])
+        return forward_operators
 
-    def __evaluate_fidelity(self, initial_state: np.array):
-        self.__inv_pulses = np.real(self.__inv_pulses)
-        rotation_operators_sequence = self.get_rotation_operators(self.__inv_pulses)
-        step_density_operator = self.get_step_density_operator(initial_state, rotation_operators_sequence)
-        return self.__sc.get_fidelity(self.__target_operator, step_density_operator)
+    def _get_step_rotation(self, initial_state: np.array, rotation_sequence: np.array):
+        rotation_evolution = self.get_evolution(rotation_sequence)
+        rotated_state = self.get_state(rotation_evolution, initial_state)
+        rotation_operator = self.get_density_operator(rotated_state)
+        return rotation_operator
 
-    def __update_pulse(self):
-        if np.logical_and(self.__pulses > self.__num_sets["e_min"], self.__pulses < self.__num_sets["e_max"]).all():
-            self.__return = self.__pulses
+    def _update_pulse(self):
+        if np.logical_and(self._pulses > self._num_sets["e_min"], self._pulses < self._num_sets["e_max"]).all():
+            self._return = self._pulses
         else:
             pass
 
-    def __get_order(self, pulses: np.array):
-        self.__inv_pulses = pulses[::-1]
+    def _get_order(self, pulses: np.array):
+        self._inv_pulses = pulses[::-1]
         return

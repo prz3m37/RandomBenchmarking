@@ -41,22 +41,27 @@ class NumericalMethods:
         return grad
 
     @classmethod
-    def __get_penalty(cls, j: float):
-        if j > cls.j_max:
-            return np.log(j-cls.j_max)
-        elif j < cls.j_min:
-            return np.log(j - cls.j_min)
-        else:
-            return 0
+    def get_penalty_gradient(cls, backward_operators: np.array, forward_operators: np.array, detunings: np.array):
+        penalty_gradient = np.array(
+            [-1 * cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.h_k, prop_op)) -
+             cls.__get_penalty(detunning)
+             for back_op, prop_op, detunning in zip(backward_operators, forward_operators, detunings)])
+        overlap = np.array(
+            [cls.get_matrix_product(back_op, 1j * cls.get_commutator(cls.h_k, prop_op))
+             for back_op, prop_op in zip(backward_operators, forward_operators)])
+        print("penalty gradient:", np.real(penalty_gradient))
+        print("overlap:", np.real(np.around(overlap, 6)))
+        print("t/h:", np.round(cls.dt / cls.h_bar, 3))
+        return np.real(penalty_gradient)
 
     @classmethod
-    def get_penalty_gradient(cls, back_operators: np.array, prop_operators: np.array, detunings: np.array):
-        penalty_gradient = -1 * np.array(
-            [cls.get_matrix_product(back_op, 1j * (cls.dt / cls.h_bar) * cls.get_commutator(cls.h_k, prop_op)) +
-             cls.__get_penalty(detunning)
-             for back_op, prop_op, detunning in zip(back_operators, prop_operators, detunings)])
-
-        return penalty_gradient
+    def __get_penalty(cls, j: float):
+        if j > cls.j_max:
+            return (j - cls.j_max) ** 2  # np.log(np.abs(j-(1+cls.j_max)))
+        elif j < cls.j_min:
+            return (cls.j_min - j) ** 2  # np.log(-(j - (1+cls.j_min)))
+        else:
+            return 0
 
     @classmethod
     def get_density_operator(cls, vector_a: np.array):
