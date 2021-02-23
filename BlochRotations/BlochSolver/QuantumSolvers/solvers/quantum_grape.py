@@ -4,7 +4,7 @@ from BlochSolver.Utils import settings, utils
 import numpy as np
 
 
-# TODO: Add PROPAGATOR evaluating methods !
+# TODO: FOR PROPAGATOR WE NEED TO MULTIPLY BCKW PROPAGATORS BY IDEAL OPERATOR
 
 class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
@@ -47,7 +47,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._return = self._pulses = initial_pulses
         self._n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         _, self._target_operator, self._ideal_state = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Ideal state:    ", np.around(self._ideal_state, 3))
+        print(" ---> Ideal state:     ", np.around(self._ideal_state, 3))
         self._sc.check_pulses_potential(self._n, initial_pulses, self._settings)
         iteration = 0
         while True:
@@ -82,13 +82,13 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         while True:
             print(" ---> FIDELITY", iteration, "th :", self._fidelity, "OPERATOR FIDELITY: ", self._prop_fidelity)
             self._get_order(self._pulses)
-            f_propagator, b_propagator = self._evaluate_propagators()
+            fwd_propagators, bwd_propagators = self._evaluate_propagators()
             self._j = self.get_pulse_detunings(self._pulses)
-            self._j = self._j + (self._l_rate * self.get_propagator_gradient(b_propagator, f_propagator))
+            self._j = self._j + (self._l_rate * self.get_propagator_gradient(bwd_propagators, fwd_propagators))
             self._pulses = self.get_pulse_args(self._j)
             self._get_order(self._pulses)
             self._evaluate_fidelity(initial_state)
-            self._evaluate_operator_fidelity()
+            self._evaluate_propagator_fidelity()
 
             if self._fidelity_status and self._prop_fidelity_status:
                 print(" ---> FIDELITY", iteration, "th :", self._fidelity,
@@ -109,7 +109,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._fidelity_status, self._fidelity = self._sc.get_fidelity(self._target_operator, density_operator)
         return
 
-    def _evaluate_operator_fidelity(self):
+    def _evaluate_propagator_fidelity(self):
         rotation_operators_sequence = self.get_rotation_operators(self._inv_pulses)
         simulated_prop = self.get_step_density_operator(pulse_operators=rotation_operators_sequence)
         self._prop_fidelity_status, self._prop_fidelity = self._sc.get_operator_fidelity(self._target_prop,
@@ -147,8 +147,8 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
     def _evaluate_backward_propagators(self, hermit_operators: np.array):
         reverse_hermit_operators = hermit_operators[::-1]
         backward_operators = np.array([
-            self._get_step_rotation(self._ideal_state, reverse_hermit_operators[step:])
-            if step < self._n else self._target_operator
+            self._get_step_rotation(initial_state=self._target_prop, rotation_sequence=reverse_hermit_operators[step:])
+            if step < self._n else self._target_prop
             for step in range(1, self._n + 1)], dtype=object)
         return backward_operators
 
@@ -163,9 +163,9 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         if initial_state is None:
             return rotation_evolution
         else:
-            rotated_state = self.get_state(rotation_evolution, initial_state)
-            rotation_operator = self.get_density_operator(rotated_state)
-            return rotation_operator
+            rotated_state = self.get_dot_product(rotation_evolution, initial_state)
+            # rotation_operator = self.get_density_operator(rotated_state)
+            return rotated_state
 
     def _update_pulse(self):
         if np.logical_and(self._pulses > self._num_sets["e_min"], self._pulses < self._num_sets["e_max"]).all():

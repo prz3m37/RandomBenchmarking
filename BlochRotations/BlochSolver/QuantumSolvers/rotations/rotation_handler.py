@@ -69,9 +69,8 @@ class RotationHandler:
         if init_state is None:
             return evolution
         else:
-            step_state = cls.get_state(evolution, init_state)
+            step_state = cls.get_dot_product(evolution, init_state)
             return nm.NumericalMethods.get_density_operator(step_state)
-
 
     @classmethod
     def __get_rotation_matrix(cls, alpha: float, axis: str):
@@ -87,7 +86,7 @@ class RotationHandler:
         angles, axes = angles[::-1], axes[::-1]
         rotations_sequence = cls.__get_rotation_sequence(angles, axes)
         target_rotation = cls.get_evolution(rotations_sequence)
-        ideal_state = cls.get_state(target_rotation, init_state)
+        ideal_state = cls.get_dot_product(target_rotation, init_state)
         return target_rotation, nm.NumericalMethods.get_density_operator(ideal_state), ideal_state
 
     @classmethod
@@ -95,7 +94,7 @@ class RotationHandler:
         return np.array([cls.__get_rotation_matrix(alpha=alpha, axis=axis) for alpha, axis in zip(angles, axes)])
 
     @classmethod
-    def get_state(cls, evolution_operator: np.array, init_state: np.array):
+    def get_dot_product(cls, evolution_operator: np.array, init_state: np.array):
         return np.dot(evolution_operator, init_state)
 
     @staticmethod

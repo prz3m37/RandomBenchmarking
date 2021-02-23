@@ -59,7 +59,7 @@ class ConfigParser:
         cls.numerical_params["e_max"] = float(cls.numerical_params["e_max"])
         cls.numerical_params["identities"] = int(cls.numerical_params["identities"])\
             if cls.numerical_params["identities"] != "" else None
-        cls.numerical_params["operator_error"] = float(cls.numerical_params["down_error"])\
+        cls.numerical_params["operator_error"] = float(cls.numerical_params["operator_error"])\
             if cls.numerical_params["operator_error"] != "" else None
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
             if cls.numerical_params["learning_decrementation"] != "" else None
