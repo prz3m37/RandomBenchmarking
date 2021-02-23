@@ -42,10 +42,10 @@ class RotationHandler:
         f_term = s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"]
         omega = np.sqrt(j_f ** 2 + f_term ** 2)
         phi = (omega * s.settings["pulse_time"]) / (2 * s.settings["h_bar"])
-        alpha = - j_f / omega
+        alpha = -j_f / omega
         beta = f_term / omega
-        return np.array([[np.cos(phi) + (1j * alpha * np.sin(phi)), -1j * beta * np.sin(phi)],
-                         [-1j * beta * np.sin(phi), np.cos(phi) - (1j * alpha * np.sin(phi))]])
+        return np.array([[np.cos(phi) + 1j * alpha * np.sin(phi), -1j * beta * np.sin(phi)],
+                         [-1j * beta * np.sin(phi), np.cos(phi) - 1j * alpha * np.sin(phi)]])
 
     @classmethod
     def get_control_hamiltonian(cls):
@@ -64,10 +64,14 @@ class RotationHandler:
             return np.linalg.multi_dot(pulse_sequence)
 
     @classmethod
-    def get_step_density_operator(cls, init_state: np.array, pulse_operators: np.array):
+    def get_step_density_operator(cls, pulse_operators: np.array, init_state: np.array = None):
         evolution = cls.get_evolution(pulse_operators)
-        step_state = cls.get_state(evolution, init_state)
-        return nm.NumericalMethods.get_density_operator(step_state)
+        if init_state is None:
+            return evolution
+        else:
+            step_state = cls.get_state(evolution, init_state)
+            return nm.NumericalMethods.get_density_operator(step_state)
+
 
     @classmethod
     def __get_rotation_matrix(cls, alpha: float, axis: str):
@@ -84,7 +88,7 @@ class RotationHandler:
         rotations_sequence = cls.__get_rotation_sequence(angles, axes)
         target_rotation = cls.get_evolution(rotations_sequence)
         ideal_state = cls.get_state(target_rotation, init_state)
-        return ideal_state, nm.NumericalMethods.get_density_operator(ideal_state)
+        return target_rotation, nm.NumericalMethods.get_density_operator(ideal_state), ideal_state
 
     @classmethod
     def __get_rotation_sequence(cls, angles: np.array, axes: np.array):
@@ -100,7 +104,8 @@ class RotationHandler:
 
     @staticmethod
     def __get_x_rotation(alpha: float):
-        return np.array([[np.cos(alpha / 2), -1j * np.sin(alpha / 2)], [-1j * np.sin(alpha / 2), np.cos(alpha / 2)]])
+        return np.array([[np.cos(alpha / 2), -1j * np.sin(alpha / 2)],
+                         [-1j * np.sin(alpha / 2), np.cos(alpha / 2)]])
 
     @staticmethod
     def __get_y_rotation(alpha: float):

@@ -34,9 +34,9 @@ class SolversManager:
     def __get_info(solver_type: str, initial_pulses, angles, axes, initial_state):
         np.set_printoptions(linewidth=np.inf)
 
-        print("############################################",
-              "\n ---> Solver --", solver_type, "-- running for: "
-              , "\n############################################"
+        print("########################################################################",
+              "\n                          --", solver_type, "SOLVER -- "
+              , "\n########################################################################"
               , " \n ---> Target rotation: ", np.rad2deg(angles), "around: ", axes
               , "\n ---> Initial state:   ",
               "[", np.round(initial_state[0], 3), np.round(initial_state[1], 3), "]"
@@ -44,7 +44,7 @@ class SolversManager:
         return
 
     def __get_time(self):
-        print("############################################")
+        print("########################################################################")
         print(" ---> Simulation executed in: ", np.round(time.time() - self.__time_start, 3), " sec")
-        print("############################################")
+        print("########################################################################")
         return

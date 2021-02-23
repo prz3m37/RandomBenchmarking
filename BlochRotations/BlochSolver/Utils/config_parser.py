@@ -1,3 +1,7 @@
+from BlochSolver.Utils import settings
+import numpy as np
+
+
 class ConfigParser:
 
     params = {"magnetic_field": 0.,
@@ -9,11 +13,11 @@ class ConfigParser:
                         "learning_rate": 0.,
                         "learning_incrementation": 0.,
                         "learning_decrementation": 0.,
-                        "down_error": 0.,
+                        "operator_error": 0.,
                         "error": 0.,
                         "j_min": 0.,
                         "j_max": 0.,
-                        "gamma": 0.
+                        "identities": 0.
                         }
 
     @classmethod
@@ -47,16 +51,16 @@ class ConfigParser:
     def convert_data(cls):
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
-        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * 4.135667696 * 10**(-15))
+        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * settings.settings['h_bar'] * 2 * np.pi)
         cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 **(-9))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
         cls.numerical_params["e_min"] = float(cls.numerical_params["e_min"])
         cls.numerical_params["e_max"] = float(cls.numerical_params["e_max"])
-        cls.numerical_params["gamma"] = float(cls.numerical_params["gamma"])\
-            if cls.numerical_params["gamma"] != "" else None
-        cls.numerical_params["down_error"] = float(cls.numerical_params["down_error"])\
-            if cls.numerical_params["down_error"] != "" else None
+        cls.numerical_params["identities"] = int(cls.numerical_params["identities"])\
+            if cls.numerical_params["identities"] != "" else None
+        cls.numerical_params["operator_error"] = float(cls.numerical_params["down_error"])\
+            if cls.numerical_params["operator_error"] != "" else None
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
             if cls.numerical_params["learning_decrementation"] != "" else None
         cls.numerical_params["learning_incrementation"] = float(cls.numerical_params["learning_incrementation"]) \

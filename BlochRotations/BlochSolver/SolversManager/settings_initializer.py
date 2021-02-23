@@ -55,13 +55,13 @@ class SettingsInitializer:
         return
 
     def __set_termination_down_error(self):
-        if self.__num_settings["down_error"] is None:
-            self.__num_settings["down_error"] = 0.95
+        if self.__num_settings["operator_error"] is None:
+            self.__num_settings["operator_error"] = 0.99
         return
 
     def __set_penalty_level(self):
-        if self.__num_settings["gamma"] is None:
-            self.__num_settings["gamma"] = 1
+        if self.__num_settings["identities"] is None:
+            self.__num_settings["identities"] = 0
         return
 
     def __set_max_iteration(self):

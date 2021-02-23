@@ -1,12 +1,13 @@
-from BlochSolver.QuantumSolvers.rotations import rotation_handler
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 import numpy as np
 
 
 class NumericalMethods:
+    n_shape = None
     dt = None
     h_bar = None
     h_k = None
-    gamma = None
+    idn_num = None
     j_max = None
     j_min = None
 
@@ -14,11 +15,10 @@ class NumericalMethods:
     def load_numerical_settings(cls, control_hamiltonian: np.array, settings: dict, num_settings: dict) -> None:
         cls.dt = settings["pulse_time"]
         cls.h_bar = settings["h_bar"]
-        cls.gamma = num_settings["gamma"]
+        cls.idn_num = num_settings["identities"]
         cls.h_k = control_hamiltonian
-        cls.j_min = rotation_handler.RotationHandler.get_pulse_detuning(num_settings["e_min"])
-        cls.j_max = rotation_handler.RotationHandler.get_pulse_detuning(num_settings["e_max"])
-        print(cls.j_max, cls.j_min)
+        cls.j_min = rh.RotationHandler.get_pulse_detuning(num_settings["e_min"])
+        cls.j_max = rh.RotationHandler.get_pulse_detuning(num_settings["e_max"])
         return
 
     @classmethod
@@ -44,22 +44,28 @@ class NumericalMethods:
     def get_penalty_gradient(cls, backward_operators: np.array, forward_operators: np.array, detunings: np.array):
         penalty_gradient = np.array(
             [-1 * cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.h_k, prop_op)) -
+             cls.__get_penalty(detunning) if k < cls.n_shape - cls.idn_num
+             else
+             -1 * cls.get_matrix_product(back_op,
+                                         1j * cls.dt * cls.get_commutator(rh.RotationHandler.idn,
+                                                                          prop_op)) -
              cls.__get_penalty(detunning)
-             for back_op, prop_op, detunning in zip(backward_operators, forward_operators, detunings)])
-        overlap = np.array(
-            [cls.get_matrix_product(back_op, 1j * cls.get_commutator(cls.h_k, prop_op))
-             for back_op, prop_op in zip(backward_operators, forward_operators)])
-        print("penalty gradient:", np.real(penalty_gradient))
-        print("overlap:", np.real(np.around(overlap, 6)))
-        print("t/h:", np.round(cls.dt / cls.h_bar, 3))
+             for k, (back_op, prop_op, detunning) in enumerate(zip(backward_operators, forward_operators, detunings))])
         return np.real(penalty_gradient)
+
+    @classmethod
+    def get_propagator_gradient(cls, backward_propagator: np.array, forward_propagator: np.array):
+        propagator_gradient = np.array(
+            [cls.get_matrix_product(back_prop, 1j * cls.dt * rh.RotationHandler.get_state(cls.h_k, fwd_prop))
+             for back_prop, fwd_prop in zip(backward_propagator, forward_propagator)])
+        return -np.real(propagator_gradient)
 
     @classmethod
     def __get_penalty(cls, j: float):
         if j > cls.j_max:
             return (j - cls.j_max) ** 2  # np.log(np.abs(j-(1+cls.j_max)))
         elif j < cls.j_min:
-            return (cls.j_min - j) ** 2  # np.log(-(j - (1+cls.j_min)))
+            return -(cls.j_min - j) ** 2  # np.log(-(j - (1+cls.j_min)))
         else:
             return 0
 

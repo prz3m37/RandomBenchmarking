@@ -54,10 +54,10 @@ class Utils:
             cls.cfg_parser.numerical_params["learning_decrementation"]
         settings.numerical_settings["learning_rate"] = cls.cfg_parser.numerical_params["learning_rate"]
         settings.numerical_settings["error"] = cls.cfg_parser.numerical_params["error"]
-        settings.numerical_settings["down_error"] = cls.cfg_parser.numerical_params["down_error"]
+        settings.numerical_settings["operator_error"] = cls.cfg_parser.numerical_params["operator_error"]
         settings.numerical_settings["e_min"] = cls.cfg_parser.numerical_params["e_min"]
         settings.numerical_settings["e_max"] = cls.cfg_parser.numerical_params["e_max"]
-        settings.numerical_settings["gamma"] = cls.cfg_parser.numerical_params["gamma"]
+        settings.numerical_settings["identities"] = cls.cfg_parser.numerical_params["identities"]
         return
 
     @classmethod

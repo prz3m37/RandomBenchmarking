@@ -62,19 +62,19 @@ class BlochPlotter:
 
         plt.subplot(311)
         plt.title("Initial pulses")
-        plt.ylabel("\u03B5 meV")
+        plt.ylabel("\u03B5 eV")
         sns.barplot(y=pulses_init, x=self.__x_axis, edgecolor='black', color="steelblue")
         plt.xticks(rotation=45)
 
         plt.subplot(312)
         plt.title("Final pulses")
-        plt.ylabel("\u03B5 meV")
+        plt.ylabel("\u03B5 eV")
         sns.barplot(y=pulses_final, x=self.__x_axis, edgecolor='black', color="green")
         plt.xticks(rotation=45)
 
         plt.subplot(313)
         plt.title("Pulses difference")
-        plt.ylabel("\u0394 \u03B5 meV")
+        plt.ylabel("\u0394 \u03B5 eV")
         plt.xlabel("steps [N]")
         sns.barplot(y=diff, x=self.__x_axis, edgecolor='black', color="darkred")
         plt.xticks(rotation=45)
