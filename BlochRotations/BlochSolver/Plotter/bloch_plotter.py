@@ -50,6 +50,7 @@ class BlochPlotter:
         ax.set_xlabel('$X$', fontsize=20)
         ax.set_ylabel('$Y$', fontsize=20)
         ax.set_zlabel(r'$Z$', fontsize=20)
+        ax.grid(False)
         ax.legend()
         plt.savefig(Utils.get_png_name("BLOCH_EVOLUTION"))
         plt.close()
