@@ -1,4 +1,5 @@
 from BlochSolver.Plotter import plotter_converter as pc
+from BlochSolver.Utils.utils import Utils
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
@@ -48,9 +49,10 @@ class BlochPlotter:
         ax.plot3D(x_cor, y_cor, z_cor, "--D", color='red', label="Pulse evolution")
         ax.set_xlabel('$X$', fontsize=20)
         ax.set_ylabel('$Y$', fontsize=20)
-        ax.set_zlabel(r'$Z$', fontsize=20, )
+        ax.set_zlabel(r'$Z$', fontsize=20)
         ax.legend()
-        plt.show()
+        plt.savefig(Utils.get_png_name("BLOCH_EVOLUTION"))
+        plt.close()
 
         return
 
@@ -78,7 +80,8 @@ class BlochPlotter:
         plt.xlabel("steps [N]")
         sns.barplot(y=diff, x=self.__x_axis, edgecolor='black', color="darkred")
         plt.xticks(rotation=45)
-        plt.show()
+        plt.savefig(Utils.get_png_name("PULSE_DIFF"))
+        plt.close()
         return
 
     @staticmethod
@@ -97,5 +100,6 @@ class BlochPlotter:
         plt.xlabel("steps [N]")
         plt.plot(iterations, learning_rate, "--D")
         plt.xticks(rotation=45)
-        plt.show()
+        plt.savefig(Utils.get_png_name("NUMERICS"))
+        plt.close()
         return

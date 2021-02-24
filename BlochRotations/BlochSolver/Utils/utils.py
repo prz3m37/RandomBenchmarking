@@ -19,7 +19,6 @@ class Utils:
     @classmethod
     def initialize_utilities(cls, solver_type: str, results_path: str = "./"):
         cls.__result_file_path = results_path
-
         cls.cfg_parser = config_parser.ConfigParser
         cls.cfg_parser.get_params(results_path)
         cls.cfg_parser.get_numerical_params(results_path)
@@ -71,6 +70,10 @@ class Utils:
         res = "[" + cls.__get_current_time() + "] " + result + "\n"
         cls.results_file.write(res)
         return
+
+    @classmethod
+    def get_png_name(cls, name: str):
+        return cls.__result_file_path + str(cls.__get_current_time()) + "_" + name
 
     @staticmethod
     def __get_current_time():

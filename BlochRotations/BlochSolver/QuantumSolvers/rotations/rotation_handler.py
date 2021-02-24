@@ -57,7 +57,6 @@ class RotationHandler:
 
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):
-        # print(pulse_sequence.shape)
         if pulse_sequence.shape[0] == 1:
             return pulse_sequence[0]
         else:

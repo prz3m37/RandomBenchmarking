@@ -3,7 +3,7 @@ from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm, solver_
 from BlochSolver.Utils import settings, utils
 import numpy as np
 
-
+# TODO: PHD thesis filter functions
 # TODO: FOR PROPAGATOR WE NEED TO MULTIPLY BCKW PROPAGATORS BY IDEAL OPERATOR
 
 class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
@@ -105,7 +105,8 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def _evaluate_fidelity(self, initial_state: np.array):
         rotation_operators_sequence = self.get_rotation_operators(self._inv_pulses)
-        density_operator = self.get_step_density_operator(rotation_operators_sequence, init_state=initial_state)
+        density_operator = self.get_step_density_operator(pulse_operators=rotation_operators_sequence,
+                                                          init_state=initial_state)
         self._fidelity_status, self._fidelity = self._sc.get_fidelity(self._target_operator, density_operator)
         return
 
@@ -126,14 +127,14 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
     def _evaluate_backward_operators(self, hermit_operators: np.array):
         reverse_hermit_operators = hermit_operators[::-1]
         backward_operators = np.array([
-            self._get_step_rotation(initial_state=self._ideal_state, rotation_sequence=reverse_hermit_operators[step:])
+            self._get_step_rotation(self._ideal_state, reverse_hermit_operators[step:])
             if step < self._n else self._target_operator
             for step in range(1, self._n + 1)], dtype=object)
         return backward_operators
 
     def _evaluate_forward_operators(self, initial_state: np.array, rotation_sequence: np.array):
         forward_operators = np.array([
-            self._get_step_rotation(initial_state=initial_state, rotation_sequence=rotation_sequence[-r_length - 1:])
+            self._get_step_rotation(initial_state, rotation_sequence[-r_length - 1:])
             for r_length in range(self._n)])
         return forward_operators
 
@@ -147,25 +148,36 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
     def _evaluate_backward_propagators(self, hermit_operators: np.array):
         reverse_hermit_operators = hermit_operators[::-1]
         backward_operators = np.array([
-            self._get_step_rotation(initial_state=self._target_prop, rotation_sequence=reverse_hermit_operators[step:])
+            self._get_step_propagator(initial_state=self._target_prop,
+                                      rotation_sequence=reverse_hermit_operators[step:])
             if step < self._n else self._target_prop
             for step in range(1, self._n + 1)], dtype=object)
         return backward_operators
 
     def _evaluate_forward_propagators(self, rotation_sequence: np.array):
         forward_operators = np.array([
-            self._get_step_rotation(rotation_sequence=rotation_sequence[-r_length - 1:])
+            self._get_step_propagator(rotation_sequence=rotation_sequence[-r_length - 1:])
             for r_length in range(self._n)])
         return forward_operators
 
-    def _get_step_rotation(self, rotation_sequence: np.array, initial_state: np.array = None):
+    def _get_step_propagator(self, rotation_sequence: np.array, initial_state: np.array = None):
         rotation_evolution = self.get_evolution(rotation_sequence)
         if initial_state is None:
             return rotation_evolution
         else:
             rotated_state = self.get_dot_product(rotation_evolution, initial_state)
-            # rotation_operator = self.get_density_operator(rotated_state)
             return rotated_state
+
+    def _get_step_rotation(self, initial_state: np.array, rotation_sequence: np.array):
+        rotation_evolution = self.get_evolution(rotation_sequence)
+        rotated_state = self.get_dot_product(rotation_evolution, initial_state)
+        rotation_operator = self.get_density_operator(rotated_state)
+        return rotation_operator
+
+    def _get_step_propagation(self, rotation_sequence: np.array, initial_state: np.array = None):
+        rotation_evolution = self.get_evolution(rotation_sequence)
+        rotated_state = self.get_dot_product(rotation_evolution, initial_state)
+        return rotated_state
 
     def _update_pulse(self):
         if np.logical_and(self._pulses > self._num_sets["e_min"], self._pulses < self._num_sets["e_max"]).all():
