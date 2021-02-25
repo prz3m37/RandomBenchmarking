@@ -15,8 +15,8 @@ class ConfigParser:
                         "learning_decrementation": 0.,
                         "operator_error": 0.,
                         "error": 0.,
-                        "j_min": 0.,
-                        "j_max": 0.,
+                        "e_min": 0.,
+                        "e_max": 0.,
                         "identities": 0.
                         }
 
@@ -55,8 +55,10 @@ class ConfigParser:
         cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 **(-9))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
-        cls.numerical_params["e_min"] = float(cls.numerical_params["e_min"])
-        cls.numerical_params["e_max"] = float(cls.numerical_params["e_max"])
+        cls.numerical_params["e_min"] = float(cls.numerical_params["e_min"]) \
+            if cls.numerical_params["e_min"] != "" else None
+        cls.numerical_params["e_max"] = float(cls.numerical_params["e_max"]) \
+            if cls.numerical_params["e_max"] != "" else None
         cls.numerical_params["identities"] = int(cls.numerical_params["identities"])\
             if cls.numerical_params["identities"] != "" else None
         cls.numerical_params["operator_error"] = float(cls.numerical_params["operator_error"])\

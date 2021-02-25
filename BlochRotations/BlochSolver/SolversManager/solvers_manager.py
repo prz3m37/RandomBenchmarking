@@ -19,19 +19,19 @@ class SolversManager:
         self.__get_time()
 
     def get_solver(self, solver_type: str = "GRAPE", algorithm_type: str = None,
-                   results_path: str = None, **kwargs):
-        self.__get_info(solver_type, algorithm_type, **kwargs)
+                   penalty: bool = False, results_path: str = None, **kwargs):
+        self.__get_info(solver_type, algorithm_type, penalty, **kwargs)
         utils.Utils.initialize_utilities(solver_type, results_path)
         self.__settings_init = si.SettingsInitializer()
         if solver_type == "GRAPE":
             self.__solver = qp.QuantumGrape()
-            return self.__solver.grape_solver(algorithm_type, **kwargs)
+            return self.__solver.grape_solver(algorithm_type, penalty, **kwargs)
         else:
             print("[ERROR]: Please choose quantum solver and algorithm type!")
             return
 
     @staticmethod
-    def __get_info(solver_type: str, algorithm_type: str, initial_pulses: np.array, angles: np.array,
+    def __get_info(solver_type: str, algorithm_type: str, penalty: bool, initial_pulses: np.array, angles: np.array,
                    axes: np.array, initial_state: np.array):
         np.set_printoptions(linewidth=np.inf)
         if algorithm_type is None:
@@ -40,6 +40,7 @@ class SolversManager:
               "\n                          --", solver_type, "SOLVER -- "
               , "\n########################################################################"
               , " \n ---> Algorithm type:  ", algorithm_type
+              , " \n ---> Penalty gradient:", str(penalty)
               , " \n ---> Target rotation: ", np.rad2deg(angles), "around: ", axes
               , "\n ---> Initial state:   ",
               "[", np.round(initial_state[0], 3), np.round(initial_state[1], 3), "]"

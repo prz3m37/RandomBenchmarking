@@ -5,7 +5,7 @@ from BlochSolver.Utils import settings
 import numpy as np
 
 
-class LevenbergMarquardtSolver(rh.RotationHandler, nm.NumericalMethods):
+class QuantumLevenbergMarquardt(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
         self.__settings = settings.settings

@@ -35,9 +35,11 @@ class NumericalMethods:
 
     @classmethod
     def get_gradient(cls, back_operators: np.array, forward_operators: np.array):
-        grad = -1 * np.array(
-            [cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.h_k, fwd_op))
-             for back_op, fwd_op in zip(back_operators, forward_operators)])
+        grad = np.array(
+            [-1 * cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(cls.h_k, fwd_op))
+             if k < cls.n_shape - cls.idn_num
+             else -1 * cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(rh.RotationHandler.idn, fwd_op))
+             for k, (back_op, fwd_op) in enumerate(zip(back_operators, forward_operators))])
         return grad
 
     @classmethod
@@ -61,6 +63,18 @@ class NumericalMethods:
              -1 * cls.get_matrix_product(back_prop, 1j * cls.dt *
                                          rh.RotationHandler.get_dot_product(rh.RotationHandler.idn, fwd_prop))
              for k, (back_prop, fwd_prop) in enumerate(zip(backward_propagator, forward_propagator))])
+        return np.real(propagator_gradient)
+
+    @classmethod
+    def get_penalty_propagator_gradient(cls, backward_propagator: np.array,
+                                        forward_propagator: np.array, detunings: np.array):
+        propagator_gradient = np.array(
+            [-1 * cls.get_matrix_product(back_prop, 1j * cls.dt * rh.RotationHandler.get_dot_product(cls.h_k, fwd_prop))
+             - cls.__get_penalty(detunning) if k < cls.n_shape - cls.idn_num else
+             -1 * cls.get_matrix_product(back_prop, 1j * cls.dt *
+                                         rh.RotationHandler.get_dot_product(rh.RotationHandler.idn, fwd_prop))
+             - cls.__get_penalty(detunning) for k, (back_prop, fwd_prop, detunning)
+             in enumerate(zip(backward_propagator, forward_propagator, detunings))])
         return np.real(propagator_gradient)
 
     @classmethod

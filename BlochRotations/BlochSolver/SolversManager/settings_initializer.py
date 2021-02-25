@@ -23,7 +23,8 @@ class SettingsInitializer:
         self.__set_learning_decrementation()
         self.__set_termination_error()
         self.__set_termination_down_error()
-        self.__set_penalty_level()
+        self.__set_const_pulses_level()
+        self.__set_pulse_ranges()
         return
 
     def __save_numerical_settings(self):
@@ -32,6 +33,13 @@ class SettingsInitializer:
 
     def __save_physical_params(self):
         utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__settings))
+        return
+
+    def __set_pulse_ranges(self):
+        if self.__num_settings["e_max"] is None:
+            self.__num_settings["e_max"] = 0.1
+        if self.__num_settings["e_min"] is None:
+            self.__num_settings["e_min"] = 0.
         return
 
     def __set_init_learning_rate(self):
@@ -51,15 +59,15 @@ class SettingsInitializer:
 
     def __set_termination_error(self):
         if self.__num_settings["error"] is None:
-            self.__num_settings["error"] = 0.99
+            self.__num_settings["error"] = 0.999
         return
 
     def __set_termination_down_error(self):
         if self.__num_settings["operator_error"] is None:
-            self.__num_settings["operator_error"] = 0.99
+            self.__num_settings["operator_error"] = 1.999
         return
 
-    def __set_penalty_level(self):
+    def __set_const_pulses_level(self):
         if self.__num_settings["identities"] is None:
             self.__num_settings["identities"] = 0
         return
