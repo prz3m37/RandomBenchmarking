@@ -10,8 +10,8 @@ class SettingsInitializer:
         self.__num_settings = settings.numerical_settings
         self.__settings = settings.settings
         self.__initialize_numerical_settings()
-        self.__save_numerical_settings()
-        self.__save_physical_params()
+        # self.__save_numerical_settings()
+        # self.__save_physical_params()
 
     def __del__(self):
         pass
@@ -27,13 +27,13 @@ class SettingsInitializer:
         self.__set_pulse_ranges()
         return
 
-    def __save_numerical_settings(self):
-        utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__num_settings))
-        return
-
-    def __save_physical_params(self):
-        utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__settings))
-        return
+    # def __save_numerical_settings(self):
+    #     utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__num_settings))
+    #     return
+    #
+    # def __save_physical_params(self):
+    #     utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__settings))
+    #     return
 
     def __set_pulse_ranges(self):
         if self.__num_settings["e_max"] is None:

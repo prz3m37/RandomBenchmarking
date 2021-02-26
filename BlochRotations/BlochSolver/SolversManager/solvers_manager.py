@@ -15,13 +15,12 @@ class SolversManager:
     def __del__(self):
         del self.__solver
         del self.__settings_init
-        utils.Utils.release_utilities()
         self.__get_time()
 
     def get_solver(self, solver_type: str = "GRAPE", algorithm_type: str = None,
                    penalty: bool = False, results_path: str = None, **kwargs):
         self.__get_info(solver_type, algorithm_type, penalty, **kwargs)
-        utils.Utils.initialize_utilities(solver_type, results_path)
+        utils.Utils.initialize_utilities(results_path)
         self.__settings_init = si.SettingsInitializer()
         if solver_type == "GRAPE":
             self.__solver = qp.QuantumGrape()

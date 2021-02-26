@@ -15,15 +15,15 @@ class MultiSolver:
     def parallelize_solvers(self, *solvers):
         return
 
-    def parallelize_solver_functions(self, *solver_functions):
-        self._start_solver_functions(*solver_functions)
+    def parallelize_solver_functions(self, solver_function, params: dict):
+        self._start_solver_functions(solver_function, params=params)
         self._stop_solver_functions()
         return
 
-    def _start_solver_functions(self, *solver_functions):
+    def _start_solver_functions(self, solver_function, params: dict):
         proc_num = 0
         while proc_num <= self._num_of_processes:
-            process = mp.Process(target=solver_functions[proc_num])
+            process = mp.Process(target=solver_function, kwargs=params)
             process.start()
             self._processes.append(process)
             proc_num += 1

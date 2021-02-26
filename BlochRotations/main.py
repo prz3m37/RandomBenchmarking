@@ -13,7 +13,7 @@ def main():
     initial_state = np.array([1, 0])
     ideal_state, pulses = quantum_solvers.get_solver(solver_type="GRAPE",
                                                      algorithm_type="unitary",
-                                                     penalty=False,
+                                                     penalty=True,
                                                      results_path="./",
                                                      initial_pulses=initial_pulses,
                                                      angles=angles,

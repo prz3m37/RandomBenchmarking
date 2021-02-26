@@ -13,23 +13,6 @@ class SolverController:
     learning_decrementation = None
 
     @classmethod
-    def check_pulses_potential(cls, n: int, pulses: np.array, settings: dict):
-        j_func = rh.RotationHandler.get_pulse_detunings(pulses)**2
-        j_func += (settings["dg_factor"] * settings["bohr_magneton"] * settings["magnetic_field"]) ** 2
-        total_pulse = np.sum(j_func)
-        frequency = 1 / (n * settings["pulse_time"])
-        if total_pulse < frequency:
-            print(" ---> Total pulse:     ", total_pulse)
-            print(" ---> Frequency:       ", frequency)
-            print("########################################################################")
-            print(" ---> [WARNING]: Set of pulses is not sufficient to get a fully rotation")
-            print(" ---> [WARNING]: Simulation terminated !")
-            # exit()
-        else:
-            print(" ---> [INFO]: Set of pulses is sufficient to get a fully rotation")
-        return
-
-    @classmethod
     def load_control_settings(cls, control_settings):
         cls.error = control_settings["error"]
         cls.operator_error = control_settings["operator_error"]
