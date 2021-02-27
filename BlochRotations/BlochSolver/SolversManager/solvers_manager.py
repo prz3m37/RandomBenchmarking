@@ -1,8 +1,10 @@
+import time
+
+import numpy as np
+
 from BlochSolver.QuantumSolvers.solvers import quantum_grape as qp
 from BlochSolver.SolversManager import settings_initializer as si
 from BlochSolver.Utils import utils
-import numpy as np
-import time
 
 
 class SolversManager:

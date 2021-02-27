@@ -1,8 +1,10 @@
-from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 import numpy as np
+
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 
 
 class NumericalMethods:
+
     n_shape = None
     dt = None
     h_bar = None

@@ -1,28 +1,26 @@
-from BlochSolver.Plotter import plotter_converter as pc
-from BlochSolver.Utils.utils import Utils
-import seaborn as sns
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
-import warnings
+import seaborn as sns
+
+from BlochSolver.Plotter import plotter_converter as pc
+from BlochSolver.Utils.utils import Utils
 
 warnings.filterwarnings('ignore')
 
 
 class BlochPlotter:
 
-    def __init__(self):
-        self.__size = None
-        self.__x_axis = None
-
-    def plot(self, pulses_final: np.array, plot_type: str = None, **kwargs):
-        self.__size = len(pulses_final)
-        self.__x_axis = np.arange(1, self.__size + 1, 1)
+    def plot(self, pulses_final: np.array = None, plot_type: str = None, **kwargs):
         if plot_type == "evolution":
             init_vector, target_state, pulse_vectors = \
                 pc.PlotterConverter.convert_bloch_coordinates(pulses_final, **kwargs)
             self.__plot_evolution(pulse_vectors, init_vector, target_state)
         elif plot_type == "numerical":
             self.__plot_numerical_data(**kwargs)
+        elif plot_type == "filters":
+            self.__plot_filtered_pulses(**kwargs)
         elif plot_type == "pulses":
             self.__plot_pulses_diff(pulses_final=pulses_final, **kwargs)
         else:
@@ -59,6 +57,8 @@ class BlochPlotter:
 
     def __plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
         diff = pulses_final - pulses_init
+        size = len(pulses_final)
+        x_axis = np.arange(1, size + 1, 1)
         sns.set_style("dark")
         plt.figure(figsize=(17, 12))
         plt.subplots_adjust(hspace=0.5)
@@ -66,23 +66,45 @@ class BlochPlotter:
         plt.subplot(311)
         plt.title("Initial pulses")
         plt.ylabel("\u03B5 eV")
-        sns.barplot(y=pulses_init, x=self.__x_axis, edgecolor='black', color="steelblue")
+        sns.barplot(y=pulses_init, x=x_axis, edgecolor='black', color="steelblue")
         plt.xticks(rotation=45)
 
         plt.subplot(312)
         plt.title("Final pulses")
         plt.ylabel("\u03B5 eV")
-        sns.barplot(y=pulses_final, x=self.__x_axis, edgecolor='black', color="green")
+        sns.barplot(y=pulses_final, x=x_axis, edgecolor='black', color="green")
         plt.xticks(rotation=45)
 
         plt.subplot(313)
         plt.title("Pulses difference")
         plt.ylabel("\u0394 \u03B5 eV")
         plt.xlabel("steps [N]")
-        sns.barplot(y=diff, x=self.__x_axis, edgecolor='black', color="darkred")
+        sns.barplot(y=diff, x=x_axis, edgecolor='black', color="darkred")
         plt.xticks(rotation=45)
         plt.savefig(Utils.get_png_name("PULSE_DIFF"))
         plt.close()
+        return
+
+    @staticmethod
+    def __plot_filtered_pulses(signal_filtered: np.array, signal: np.array, duration: int, pulse_time: float):
+        time = np.linspace(0, duration * pulse_time, signal.shape[0])
+        sns.set_style("dark")
+        plt.figure(figsize=(17, 12))
+        plt.subplots_adjust(hspace=0.5)
+
+        plt.subplot(211)
+        plt.title("Initial signal")
+        plt.ylabel("\u03B5 eV")
+        plt.plot(time, signal, "--o", color="steelblue")
+        plt.xticks()
+
+        plt.subplot(212)
+        plt.title("Filtered signal")
+        plt.ylabel("\u03B5 eV")
+        plt.plot(time, signal_filtered, "--o", color="green")
+        plt.xticks()
+        plt.savefig(Utils.get_png_name("PULSE_FILTER"))
+        plt.show()
         return
 
     @staticmethod

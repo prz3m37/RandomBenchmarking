@@ -1,6 +1,7 @@
-from BlochSolver.Utils import settings, config_parser
 import datetime
 import os
+
+from BlochSolver.Utils import config_parser, settings
 
 
 class Utils:

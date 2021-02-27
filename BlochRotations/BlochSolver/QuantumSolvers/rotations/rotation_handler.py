@@ -1,6 +1,7 @@
 import numpy as np
-from BlochSolver.Utils import settings as s
+
 from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
+from BlochSolver.Utils import settings as s
 
 
 class RotationHandler:
@@ -28,13 +29,12 @@ class RotationHandler:
 
     # TODO: Apply Daniel filter function
     @classmethod
-    def __filter(cls, pulse: float):
-        pulse_prime = pulse
-        return pulse_prime
+    def __filter_pulses(cls, pulse_prime: float):
+        return
 
     @classmethod
     def apply_filter_to_pulse(cls, guess_pulse: np.array):
-        return np.fromiter((cls.__filter(pulse) for pulse in guess_pulse), np.float)
+        return np.array((cls.__filter_pulses(pulse) for pulse in guess_pulse), np.float)
 
     @classmethod
     def __get_rotation_operator(cls, pulse: float):

@@ -1,8 +1,10 @@
-from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
-from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm, solver_controller as sc
-from BlochSolver.QuantumSolvers.evolutions import propagators, operators
-from BlochSolver.Utils import settings, utils
 import numpy as np
+
+from BlochSolver.QuantumSolvers.evolutions import operators, propagators
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm, solver_controller as sc
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
+from BlochSolver.Utils import settings, utils
+
 
 # TODO: PHD thesis filter functions
 
@@ -43,7 +45,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._return = self._pulses = initial_pulses
         n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         _, target_operator, ideal_state = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Ideal state:     ", np.around(ideal_state, 3))
+        print(" ---> Ideal state:     ", np.around(ideal_state, 3), "\n")
         self._operators.adopt_operators(n, initial_state, ideal_state, target_operator)
         iteration = 0
         while True:
@@ -59,12 +61,12 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
 
             if fidelity_status:
-                print(" ---> FINAL FIDELITY", iteration, ":", fidelity)
+                print(" **** FINAL FIDELITY", iteration, ":", fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
                 break
             else:
-                print(" ---> FIDELITY", iteration, "th :", fidelity)
+                print(" **** FIDELITY", iteration, "th :", fidelity)
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return
@@ -73,7 +75,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._return = self._pulses = initial_pulses
         n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         target_prop, target_operator, ideal_state = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Ideal state:    ", np.around(ideal_state, 3))
+        print(" ---> Ideal state:     ", np.around(ideal_state, 3), "\n")
         self._prop.adopt_propagators(n, initial_state, target_prop)
         self._operators.adopt_operators(n, initial_state, ideal_state, target_operator)
         iteration = 0
@@ -92,13 +94,13 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_propagator_fidelity(self._inv_pulses)
 
             if fidelity_status and prop_fidelity_status:
-                print(" ---> FIDELITY", iteration, "th :", fidelity,
+                print("  **** FINAL FIDELITY", iteration, "th :", fidelity,
                       "FINAL OPERATOR FIDELITY: ", prop_fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
                 break
             else:
-                print(" ---> FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return
@@ -107,7 +109,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._return = self._pulses = initial_pulses
         n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         _, target_operator, ideal_state = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Ideal state:     ", np.around(ideal_state, 3))
+        print(" ---> Ideal state:     ", np.around(ideal_state, 3), "\n")
         self._operators.adopt_operators(n, initial_state, ideal_state, target_operator)
         iteration = 0
         while True:
@@ -125,7 +127,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._l_rate = self._sc.update_learning_rate(self._fidelity_init, fidelity, self._l_rate)
 
             if fidelity_status:
-                print(" ---> FINAL FIDELITY", iteration, ":", fidelity)
+                print(" **** FINAL FIDELITY", iteration, ":", fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
                 break
@@ -140,7 +142,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._return = self._pulses = initial_pulses
         n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         target_prop, target_operator, ideal_state = self.get_target_state(angles, axes, initial_state)
-        print(" ---> Ideal state:    ", np.around(ideal_state, 3))
+        print(" ---> Ideal state:     ", np.around(ideal_state, 3), "\n")
         self._prop.adopt_propagators(n, initial_state, target_prop)
         self._operators.adopt_operators(n, initial_state, ideal_state, target_operator)
         iteration = 0
@@ -161,12 +163,12 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._l_rate = self._sc.update_learning_rate(self._fidelity_init, fidelity, self._l_rate)
 
             if fidelity_status and prop_fidelity_status:
-                print(" ---> FIDELITY", iteration, "th :", fidelity, "FINAL OPERATOR FIDELITY: ", prop_fidelity)
+                print(" **** FINAL FIDELITY", iteration, "th :", fidelity, "FINAL OPERATOR FIDELITY: ", prop_fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
                 break
             else:
-                print(" ---> FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return

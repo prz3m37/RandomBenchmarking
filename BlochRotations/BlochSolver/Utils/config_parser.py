@@ -1,9 +1,9 @@
-from BlochSolver.Utils import settings
 import numpy as np
+
+from BlochSolver.Utils import settings
 
 
 class ConfigParser:
-
     params = {"magnetic_field": 0.,
               "time_tc": 0.,
               "pulse_time": 0,
@@ -51,17 +51,17 @@ class ConfigParser:
     def convert_data(cls):
         cls.params["magnetic_field"] = float(cls.params["magnetic_field"])
         cls.params["dg_factor"] = float(cls.params["dg_factor"])
-        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10**9 * settings.settings['h_bar'] * 2 * np.pi)
-        cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 **(-9))
+        cls.params["time_tc"] = (float(cls.params["time_tc"]) * 10 ** 9 * settings.settings['h_bar'] * 2 * np.pi)
+        cls.params["pulse_time"] = (float(cls.params["pulse_time"]) * 10 ** (-9))
 
         cls.numerical_params["error"] = float(cls.numerical_params["error"])
         cls.numerical_params["e_min"] = float(cls.numerical_params["e_min"]) \
             if cls.numerical_params["e_min"] != "" else None
         cls.numerical_params["e_max"] = float(cls.numerical_params["e_max"]) \
             if cls.numerical_params["e_max"] != "" else None
-        cls.numerical_params["identities"] = int(cls.numerical_params["identities"])\
+        cls.numerical_params["identities"] = int(cls.numerical_params["identities"]) \
             if cls.numerical_params["identities"] != "" else None
-        cls.numerical_params["operator_error"] = float(cls.numerical_params["operator_error"])\
+        cls.numerical_params["operator_error"] = float(cls.numerical_params["operator_error"]) \
             if cls.numerical_params["operator_error"] != "" else None
         cls.numerical_params["learning_decrementation"] = float(cls.numerical_params["learning_decrementation"]) \
             if cls.numerical_params["learning_decrementation"] != "" else None

@@ -1,7 +1,6 @@
-from BlochSolver.Utils import settings
-from BlochSolver.Utils import utils
 import numpy as np
-import json
+
+from BlochSolver.Utils import settings
 
 
 class SettingsInitializer:

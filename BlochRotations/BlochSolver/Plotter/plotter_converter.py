@@ -1,6 +1,7 @@
-from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
-from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 import numpy as np
+
+from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
+from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 
 
 class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
