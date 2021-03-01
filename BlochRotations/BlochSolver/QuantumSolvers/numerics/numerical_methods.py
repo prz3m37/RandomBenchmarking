@@ -42,7 +42,7 @@ class NumericalMethods:
              if k < cls.n_shape - cls.idn_num
              else -1 * cls.get_matrix_product(back_op, 1j * cls.dt * cls.get_commutator(rh.RotationHandler.idn, fwd_op))
              for k, (back_op, fwd_op) in enumerate(zip(back_operators, forward_operators))])
-        return grad
+        return np.real(grad)
 
     @classmethod
     def get_penalty_gradient(cls, backward_operators: np.array, forward_operators: np.array, detunings: np.array):
@@ -82,9 +82,9 @@ class NumericalMethods:
     @classmethod
     def __get_penalty(cls, j: float):
         if j > cls.j_max:
-            return (j - cls.j_max) ** 2  # np.log(np.abs(j-(1+cls.j_max)))
+            return (j - cls.j_max) ** 6  # np.log(np.abs(j-(1+cls.j_max)))
         elif j < cls.j_min:
-            return -(cls.j_min - j) ** 2  # np.log(-(j - (1+cls.j_min)))
+            return (cls.j_min - j) ** 6  # np.log(-(j - (1+cls.j_min)))
         else:
             return 0
 

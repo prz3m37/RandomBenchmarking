@@ -28,7 +28,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._j = None
         self._pulses = None
         self._return = None
-        self._fidelity_init = None
 
     def grape_solver(self, algorithm_type: str = None, penalty: bool = False, **kwargs):
         self._penalty = penalty
@@ -60,10 +59,11 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
 
-            if fidelity_status:
+            if self._check_stop_condition(fidelity_status):
                 print(" **** FINAL FIDELITY", iteration, ":", fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
+                print(" **** STOP CONDITION REACHED")
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity)
@@ -93,11 +93,12 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_propagator_fidelity(self._inv_pulses)
 
-            if fidelity_status and prop_fidelity_status:
+            if self._check_unitary_stop_condition(fidelity_status, prop_fidelity_status):
                 print("  **** FINAL FIDELITY", iteration, "th :", fidelity,
                       "FINAL OPERATOR FIDELITY: ", prop_fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
+                print(" **** STOP CONDITION REACHED")
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
@@ -116,7 +117,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             f_operator, b_operator = self._operators.evaluate_operators(self._inv_pulses)
             self._j = self.get_pulse_detunings(self._pulses)
-            fidelity_status, self._fidelity_init = self._operators.evaluate_fidelity(self._inv_pulses)
             if self._penalty:
                 self._j = self._j + (self._l_rate * self.get_penalty_gradient(b_operator, f_operator, self._j))
             else:
@@ -124,12 +124,13 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._pulses = self.get_pulse_args(self._j)
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
-            self._l_rate = self._sc.update_learning_rate(self._fidelity_init, fidelity, self._l_rate)
+            self._l_rate = self._sc.update_learning_rate(fidelity)
 
-            if fidelity_status:
+            if self._check_stop_condition(fidelity_status):
                 print(" **** FINAL FIDELITY", iteration, ":", fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
+                print(" **** STOP CONDITION REACHED")
                 break
             else:
                 print(" ---> FIDELITY", iteration, "th :", fidelity)
@@ -150,7 +151,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fwd_propagators, bwd_propagators = self._prop.evaluate_propagators(self._inv_pulses)
             self._j = self.get_pulse_detunings(self._pulses)
-            fidelity_status, self._fidelity_init = self._operators.evaluate_fidelity(self._inv_pulses)
             if self._penalty:
                 self._j = self._j + (self._l_rate *
                                      self.get_penalty_propagator_gradient(bwd_propagators, fwd_propagators, self._j))
@@ -160,12 +160,13 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_propagator_fidelity(self._inv_pulses)
-            self._l_rate = self._sc.update_learning_rate(self._fidelity_init, fidelity, self._l_rate)
+            self._l_rate = self._sc.update_learning_rate(fidelity)
 
-            if fidelity_status and prop_fidelity_status:
+            if self._check_unitary_stop_condition(fidelity_status, prop_fidelity_status):
                 print(" **** FINAL FIDELITY", iteration, "th :", fidelity, "FINAL OPERATOR FIDELITY: ", prop_fidelity)
                 break
             elif self._sc.check_iteration_condition(iteration):
+                print(" **** STOP CONDITION REACHED")
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
@@ -178,6 +179,14 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._return = self._pulses
         else:
             pass
+
+    def _check_stop_condition(self, fidelity_status: float):
+        return (fidelity_status and np.logical_and(self._pulses > self._num_sets["e_min"],
+                                                   self._pulses < self._num_sets["e_max"]).all())
+
+    def _check_unitary_stop_condition(self, fidelity_status: float, propagator_fidelity_status: float):
+        return (fidelity_status and propagator_fidelity_status and
+                np.logical_and(self._pulses > self._num_sets["e_min"], self._pulses < self._num_sets["e_max"]).all())
 
     def _get_order(self, pulses: np.array):
         self._inv_pulses = pulses[::-1]

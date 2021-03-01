@@ -38,13 +38,8 @@ class SolverController:
             return False, operator_fidelity
 
     @classmethod
-    def update_learning_rate(cls, fidelity_s: float, fidelity_e: float, learning_rate: float):
-        if fidelity_s < fidelity_e:
-            return learning_rate * cls.learning_decrementation
-        elif fidelity_s > fidelity_e:
-            return learning_rate * cls.learning_incrementation
-        else:
-            return learning_rate
+    def update_learning_rate(cls, fidelity: float):
+        return 1. - fidelity
 
     @classmethod
     def check_gradient_condition(cls, gradient: np.array):

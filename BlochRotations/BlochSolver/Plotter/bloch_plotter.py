@@ -55,7 +55,8 @@ class BlochPlotter:
 
         return
 
-    def __plot_pulses_diff(self, pulses_init: np.array, pulses_final: np.array):
+    @staticmethod
+    def __plot_pulses_diff(pulses_init: np.array, pulses_final: np.array):
         diff = pulses_final - pulses_init
         size = len(pulses_final)
         x_axis = np.arange(1, size + 1, 1)
