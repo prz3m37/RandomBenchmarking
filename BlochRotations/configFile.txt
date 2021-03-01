@@ -10,8 +10,8 @@ learning_decrementation=0.5
 learning_rate=1
 operator_error=1.9999
 error=0.9999
-e_min=0.001
-e_max=0.005
+e_min=0.
+e_max=0.004
 identities=0
 ############## TYPES INFO ##############
 magnetic_filed[float]

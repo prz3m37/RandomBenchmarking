@@ -56,3 +56,26 @@ class Operators(rh.RotationHandler, nm.NumericalMethods):
         rotated_state = cls.get_dot_product(rotation_evolution, state)
         rotation_operator = cls.get_density_operator(rotated_state)
         return rotation_operator
+
+    @classmethod
+    def _evaluate_perturbated_backward_operators(cls, hermit_operators: np.array):
+        reverse_hermit_operators = hermit_operators[::-1]
+        backward_operators = np.array([
+            cls._get_step_rotation(cls._ideal_state, reverse_hermit_operators[step:])
+            if step < cls._n else cls._target_operator
+            for step in range(1, cls._n + 1)], dtype=object)
+        return backward_operators
+
+    @classmethod
+    def _evaluate_perturbated_forward_operators(cls, rotation_sequence: np.array):
+        forward_operators = np.array([
+            cls._get_step_rotation(cls._initial_state, rotation_sequence[-r_length - 1:])
+            for r_length in range(cls._n)])
+        return forward_operators
+
+    @classmethod
+    def _get_perturbated_step_rotation(cls, state: np.array, rotation_sequence: np.array):
+        rotation_evolution = cls.get_evolution(rotation_sequence)
+        rotated_state = cls.get_dot_product(rotation_evolution, state)
+        rotation_operator = cls.get_density_operator(rotated_state)
+        return rotation_operator

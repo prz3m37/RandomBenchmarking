@@ -6,6 +6,8 @@ from BlochSolver.QuantumSolvers.numerics import numerical_methods as nm
 class SolverController:
     num_methods = nm.NumericalMethods
     error = None
+    _e_min = None
+    _e_max = None
     operator_error = None
     number_of_iterations = None
     time_of_termination = None
@@ -15,6 +17,8 @@ class SolverController:
     @classmethod
     def load_control_settings(cls, control_settings):
         cls.error = control_settings["error"]
+        cls._e_min = control_settings["e_min"]
+        cls._e_max = control_settings["e_max"]
         cls.operator_error = control_settings["operator_error"]
         cls.number_of_iterations = control_settings["number_of_iterations"]
         cls.learning_incrementation = control_settings["learning_incrementation"]
@@ -42,18 +46,23 @@ class SolverController:
         return 1. - fidelity
 
     @classmethod
-    def check_gradient_condition(cls, gradient: np.array):
-        if np.max(gradient) <= cls.error:
-            return True
-        else:
-            return False
-
-    @classmethod
     def check_iteration_condition(cls, iteration: int):
         if iteration >= cls.number_of_iterations:
             return True
         else:
             return False
+
+    @classmethod
+    def check_stop_condition(cls, fidelity_status: float, pulses: np.array):
+        return (fidelity_status and np.logical_and(pulses > cls._e_min,
+                                                   pulses < cls._e_max).all())
+
+    @classmethod
+    def check_unitary_stop_condition(cls, fidelity_status: float,
+                                     propagator_fidelity_status: float, pulses: np.array):
+        return (fidelity_status and propagator_fidelity_status and
+                np.logical_and(pulses > cls._e_min,
+                               pulses < cls._e_max).all())
 
     @classmethod
     def check_time_condition(cls, time: float):
