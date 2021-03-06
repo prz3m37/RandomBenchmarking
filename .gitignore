@@ -13,4 +13,14 @@
 **/.idea/workspace.xml
 **/.idea/tasks.xml
 BlochSolver/.idea/
+BlochSolver/Perturbations/__pycache__/
+BlochSolver/Plotter/__pycache__/
+BlochSolver/QuantumSolvers/__pycache__/
+BlochSolver/QuantumSolvers/evolutions/__pycache__/
+BlochSolver/QuantumSolvers/numerics/__pycache__/
+BlochSolver/QuantumSolvers/rotations/__pycache__/
+BlochSolver/QuantumSolvers/solvers/__pycache__/
+BlochSolver/SolversManager/__pycache__/
+BlochSolver/Utils/__pycache__/
+BlochSolver/__pycache__/
 
