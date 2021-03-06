@@ -38,7 +38,6 @@ def main():
                        granulation=granulation)
 
     bloch_plotter.plot(plot_type="pulses", pulses_final=pulses, pulses_init=signal_f_init)
-    print()
     return
 
 
