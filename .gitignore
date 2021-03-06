@@ -1,3 +1,14 @@
-.bloch_solver_results/
-.bloch_solver_results_old/
-.main.py
+*.csv
+*.db
+*.jpg
+*.bmp
+*.txt
+*.mat
+*.png
+*.dat
+
+/.idea/
+/.idea/workspace.xml
+*/.idea/workspace.xml
+**/.idea/workspace.xml
+**/.idea/tasks.xml
