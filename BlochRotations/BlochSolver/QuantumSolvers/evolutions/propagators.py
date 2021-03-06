@@ -8,12 +8,16 @@ class Propagators(rh.RotationHandler, nm.NumericalMethods):
     _n = None
     _initial_state = None
     _target_prop = None
+    _granulation = None
 
     @classmethod
-    def adopt_propagators(cls, n: int, initial_state: np.array, target_propagator: np.array) -> None:
+    def adopt_propagators(cls, n: int, initial_state: np.array,
+                          target_propagator: np.array, granulation: int = None) -> None:
         cls._n = n
         cls._initial_state = initial_state
         cls._target_prop = target_propagator
+        if granulation is not None:
+            cls._granulation = granulation
         return
 
     @classmethod
@@ -25,8 +29,27 @@ class Propagators(rh.RotationHandler, nm.NumericalMethods):
         return fwd_propagators, bwd_propagators
 
     @classmethod
+    def evaluate_perturbated_propagators(cls, inv_perturbated_signal: np.array):
+        rotation_sequence = cls.get_perturbation_rotation_operators(inv_perturbated_signal, cls._granulation)
+        hermit_propagators = cls.get_hermit_sequence(rotation_sequence)
+        fwd_propagators = cls._evaluate_forward_propagators(rotation_sequence)
+        bwd_propagators = cls._evaluate_backward_propagators(hermit_propagators)
+        return fwd_propagators, bwd_propagators
+
+    @classmethod
     def evaluate_propagator_fidelity(cls, inv_pulses):
         rotation_operators_sequence = cls.get_rotation_operators(inv_pulses)
+        simulated_prop = cls.get_step_density_operator(pulse_operators=rotation_operators_sequence)
+        prop_fidelity_status, prop_fidelity = sc.SolverController.get_operator_fidelity(cls._target_prop,
+                                                                                        simulated_prop)
+        return prop_fidelity_status, prop_fidelity
+
+
+    @classmethod
+    def evaluate_effective_propagator_fidelity(cls, inv_pulses):
+        rotation_operators_sequence = cls.get_perturbation_rotation_operators(inv_pulses.reshape(cls._n,
+                                                                                                 cls._granulation),
+                                                                              cls._granulation)
         simulated_prop = cls.get_step_density_operator(pulse_operators=rotation_operators_sequence)
         prop_fidelity_status, prop_fidelity = sc.SolverController.get_operator_fidelity(cls._target_prop,
                                                                                         simulated_prop)

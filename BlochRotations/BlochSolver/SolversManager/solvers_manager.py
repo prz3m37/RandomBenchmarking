@@ -33,19 +33,23 @@ class SolversManager:
 
     @staticmethod
     def __get_info(solver_type: str, algorithm_type: str, penalty: bool, initial_pulses: np.array, angles: np.array,
-                   axes: np.array, initial_state: np.array):
+                   axes: np.array, initial_state: np.array, granulation: int =None, cut_off_time:float = None):
         np.set_printoptions(linewidth=np.inf)
         if algorithm_type is None:
             algorithm_type = "default"
         print("########################################################################",
               "\n                          --", solver_type, "SOLVER -- "
               , "\n########################################################################"
-              , " \n ---> Algorithm type:  ", algorithm_type
-              , " \n ---> Penalty gradient:", str(penalty)
-              , " \n ---> Target rotation: ", np.rad2deg(angles), "around: ", axes
-              , "\n ---> Initial state:   ",
+              , " \n ---> Algorithm type:      ", algorithm_type
+              , " \n ---> Penalty gradient:    ", str(penalty)
+              , " \n ---> Target rotation:     ", np.rad2deg(angles), "around: ", axes
+              , "\n ---> Initial state:       ",
               "[", np.round(initial_state[0], 3), np.round(initial_state[1], 3), "]"
-              , "\n ---> Initial pulses:  ", "[", initial_pulses[0], "...", initial_pulses[0], "]")
+              , "\n ---> Initial pulses:      ", "[", initial_pulses[0], "...", initial_pulses[0], "]")
+        if granulation is not None:
+            print(" ---> Granulation pulses:  ", granulation)
+        if cut_off_time is not None:
+            print(" ---> Raise time:          ", cut_off_time)
         return
 
     def __get_time(self):

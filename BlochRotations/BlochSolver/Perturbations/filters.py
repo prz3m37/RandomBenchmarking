@@ -5,6 +5,11 @@ class Filters:
     signal_len = 0
 
     @staticmethod
+    def extract_signal_chunks(perturbated_signal: np.array, pulses_num: int):
+        signal_chunks = np.array_split(perturbated_signal, pulses_num)
+        return np.array(signal_chunks)
+
+    @staticmethod
     def _get_signal(pulses):
         signal = np.ones(Filters.signal_len)
         n = int(Filters.signal_len / len(pulses))
@@ -18,19 +23,22 @@ class Filters:
         return amplitude - (amplitude - pulse_amplitude) * (1 - np.exp(-(pulse_time - t_0) / cut_off_time))
 
     @staticmethod
-    def _get_time_domain(pulse_time, duration):
-        return np.linspace(0, duration * pulse_time, Filters.signal_len)
+    def _get_time_domain(pulse_time, granulation):
+        return np.linspace(0, Filters.signal_len * pulse_time, Filters.signal_len * granulation)
 
     @staticmethod
-    def get_low_pass_pulses(pulses, pulse_time, cut_off_time, granulation, duration):
+    def get_low_pass_pulses(pulses, pulse_time, cut_off_time, granulation, return_original_signal: bool = False):
         Filters.signal_len = pulses.shape[0] * granulation
         signal = Filters._get_signal(pulses)
         signal_f = np.ones(signal.shape[0])
         signal_f[-1] = signal[0]
-        t = Filters._get_time_domain(pulse_time, duration)
+        t = Filters._get_time_domain(pulse_time, granulation)
         t_0 = 0
         for i, A0 in enumerate(signal):
             if A0 != signal[i - 1]:
                 t_0 = t[i]
             signal_f[i] = Filters._get_low_pass_filter(t[i], t_0, cut_off_time, signal_f[i - 1], signal[i])
-        return signal_f, signal
+        if return_original_signal:
+            return signal_f, signal
+        else:
+            return signal_f

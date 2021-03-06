@@ -7,9 +7,10 @@ from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
 
     @classmethod
-    def convert_bloch_coordinates(cls, pulses: np.array, init_state: np.array, target_state: np.array):
+    def convert_bloch_coordinates(cls, pulses: np.array, init_state: np.array, target_state: np.array,
+                                  granulation: int = None):
         pulses = pulses[::-1]
-        bloch_states = cls.get_pulse_states(pulses, init_state)
+        bloch_states = cls.get_pulse_states(pulses, init_state, granulation)
         init_vector = cls.get_real_vector(init_state)
         target_final_state = cls.get_real_vector(target_state)
         real_vectors = cls.get_pulse_real_vectors(bloch_states)
@@ -29,9 +30,14 @@ class PlotterConverter(rh.RotationHandler, nm.NumericalMethods):
         return np.array([cls.get_real_vector(bloch_state) for bloch_state in bloch_states])
 
     @classmethod
-    def get_pulse_states(cls, pulses: np.array, init_state: np.array):
-        n = len(pulses)
-        rotation_operators = cls.get_rotation_operators(pulses)
+    def get_pulse_states(cls, pulses: np.array, init_state: np.array, granulation:int = None):
+        if granulation is not None:
+            n = int(len(pulses) / granulation)
+            rotation_operators = cls.get_perturbation_rotation_operators(pulses.reshape(n, granulation), granulation)
+        else:
+            n = len(pulses)
+            rotation_operators = cls.get_rotation_operators(pulses)
+
         evolution_operators = np.array([cls.get_evolution(rotation_operators[:step + 1])
                                         for step in range(n)])
         bloch_states = np.array([cls.get_dot_product(evolution_operator, init_state)

@@ -48,12 +48,31 @@ class RotationHandler:
                          [-1j * beta * np.sin(phi), np.cos(phi) - 1j * alpha * np.sin(phi)]])
 
     @classmethod
+    def __get_perturbated_rotation_operator(cls, pulse: float, granulation: int):
+        j_f = cls.get_pulse_detuning(pulse)
+        pulse_time = s.settings["pulse_time"] / granulation
+        f_term = s.settings["dg_factor"] * s.settings["bohr_magneton"] * s.settings["magnetic_field"]
+        omega = np.sqrt(j_f ** 2 + f_term ** 2)
+        phi = (omega * pulse_time) / (2 * s.settings["h_bar"])
+        alpha = -j_f / omega
+        beta = f_term / omega
+        return  np.array([[np.cos(phi) + 1j * alpha * np.sin(phi), -1j * beta * np.sin(phi)],
+                         [-1j * beta * np.sin(phi), np.cos(phi) - 1j * alpha * np.sin(phi)]])
+
+    @classmethod
     def get_control_hamiltonian(cls):
         return cls.__get_pauli_z()
 
     @classmethod
     def get_rotation_operators(cls, pulses: np.array):
         return np.array([cls.__get_rotation_operator(pulse) for pulse in pulses])
+
+    @classmethod
+    def get_perturbation_rotation_operators(cls, perturbated_signal: np.array, granulation: int):
+        perturbated_pulses = np.array([cls.get_evolution(
+            np.array([cls.__get_perturbated_rotation_operator(pulse, granulation) for pulse in chunk_pulses]))
+                                       for chunk_pulses in perturbated_signal])
+        return perturbated_pulses
 
     @classmethod
     def get_evolution(cls, pulse_sequence: np.array):

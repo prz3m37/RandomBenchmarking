@@ -12,10 +12,10 @@ warnings.filterwarnings('ignore')
 
 class BlochPlotter:
 
-    def plot(self, pulses_final: np.array = None, plot_type: str = None, **kwargs):
+    def plot(self, pulses_final: np.array = None, plot_type: str = None, granulation: int = None, **kwargs):
         if plot_type == "evolution":
             init_vector, target_state, pulse_vectors = \
-                pc.PlotterConverter.convert_bloch_coordinates(pulses_final, **kwargs)
+                pc.PlotterConverter.convert_bloch_coordinates(pulses_final, granulation=granulation, **kwargs)
             self.__plot_evolution(pulse_vectors, init_vector, target_state)
         elif plot_type == "numerical":
             self.__plot_numerical_data(**kwargs)
@@ -52,7 +52,6 @@ class BlochPlotter:
         ax.legend()
         plt.savefig(Utils.get_png_name("BLOCH_EVOLUTION"))
         plt.close()
-
         return
 
     @staticmethod
@@ -87,8 +86,8 @@ class BlochPlotter:
         return
 
     @staticmethod
-    def __plot_filtered_pulses(signal_filtered: np.array, signal: np.array, duration: int, pulse_time: float):
-        time = np.linspace(0, duration * pulse_time, signal.shape[0])
+    def __plot_filtered_pulses(signal_filtered: np.array, signal: np.array, pulse_time: float):
+        time = np.linspace(0, signal.shape[0] * pulse_time, signal.shape[0])
         sns.set_style("dark")
         plt.figure(figsize=(17, 12))
         plt.subplots_adjust(hspace=0.5)
@@ -104,7 +103,7 @@ class BlochPlotter:
         plt.ylabel("\u03B5 eV")
         plt.plot(time, signal_filtered, "--o", color="green")
         plt.xticks()
-        plt.savefig(Utils.get_png_name("PULSE_FILTER"))
+        # plt.savefig(Utils.get_png_name("PULSE_FILTER"))
         plt.show()
         return
 

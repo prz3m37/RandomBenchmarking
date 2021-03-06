@@ -1,2 +1,0 @@
-# RandomBenchmarking
-Random Benchmarking method
