@@ -7,9 +7,6 @@ from BlochSolver.QuantumSolvers.rotations import rotation_handler as rh
 from BlochSolver.Utils import settings, utils
 
 
-# TODO: PHD thesis filter functions
-
-
 class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
 
     def __init__(self):
@@ -109,7 +106,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 print(" **** STOP CONDITION REACHED")
                 break
             else:
-                print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                # print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return
@@ -256,7 +253,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 print(" **** STOP CONDITION REACHED")
                 break
             else:
-                # print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return
