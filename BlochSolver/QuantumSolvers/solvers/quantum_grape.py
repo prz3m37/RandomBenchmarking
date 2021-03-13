@@ -205,6 +205,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
 
             fidelity_status, fidelity = self._operators.evaluate_effective_fidelity(self._inv_pulses)
+            # self._pulses = Filters.filter_out_signal(self._pulses, n, granulation)
 
             if self._sc.check_stop_condition(fidelity_status, self._pulses):
                 print(" **** FINAL FIDELITY", iteration, ":", fidelity)
@@ -214,6 +215,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity)
+                print(self._pulses.max(), self._pulses.min())
                 self._update_pulse()
                 iteration += 1
         return ideal_state, self._return
@@ -245,16 +247,21 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_effective_fidelity(self._inv_pulses)
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_effective_propagator_fidelity(self._inv_pulses)
+
             if self._sc.check_unitary_stop_condition(fidelity_status, prop_fidelity_status, self._pulses):
                 print("  **** FINAL FIDELITY", iteration, "th :", fidelity,
                       "FINAL OPERATOR FIDELITY: ", prop_fidelity)
+                self._return = Filters.filter_out_signal(self._pulses, n, granulation)
                 break
             elif self._sc.check_iteration_condition(iteration):
                 print(" **** STOP CONDITION REACHED")
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                self._pulses = Filters.filter_out_signal(self._pulses, n, granulation)
                 self._update_pulse()
+                self._pulses = Filters.get_low_pass_pulses(self._pulses, self._settings["pulse_time"],
+                                                           cut_off_time, granulation)
                 iteration += 1
         return ideal_state, self._return
 

@@ -95,48 +95,77 @@ def process_proper_pulses(granulation, cut_time, error):
 
 def main():
     # bloch_plotter = bs.BlochPlotter()
-    # quantum_solvers = solvers_manager.SolversManager()
+    quantum_solvers = solvers_manager.SolversManager()
 
     angles = [np.pi / 2]
     axes = ["x"]
     initial_state = np.array([1, 0])
     # granulation = 8
     # cut_off_time = 0.4e-9
-    for i in range(10000):
+    for i in range(2000):
         print("----------------------- PULSE ITERATION : ", i, " ----------------------- \n")
-        quantum_solvers = solvers_manager.SolversManager()
         initial_pulses = np.random.uniform(0.0015, 0.004, 32)
         ideal_state, pulses = quantum_solvers.get_solver(solver_type="GRAPE",
                                                          algorithm_type="unitary",
-                                                         penalty=False,
+                                                         penalty=True,
                                                          results_path="./",
                                                          initial_pulses=initial_pulses,
                                                          angles=angles,
                                                          axes=axes,
                                                          initial_state=initial_state)
-        del quantum_solvers
 
-        name = '/home/pzielins/Documents/repositories/IST/RandomBenchmarking/pulses_sweep/pulses_' + str(i) + '.npy'
+        name = '/home/pzielins/Documents/repositories/IST/RandomBenchmarking/pulses_sweep_penalty/penalty_pulses_' \
+               + str(i) + '.npy'
         with open(name, 'wb') as f:
             np.save(f, pulses)
 
-    # signal_f_init, signal_init = Filters.get_low_pass_pulses(initial_pulses, 1.64e-9, cut_off_time, granulation,
-    #                                                          True)
-    #
-    # bloch_plotter.plot(plot_type="evolution", pulses_final=pulses, init_state=initial_state,
-    #                    target_state=ideal_state,
-    #                    granulation=granulation)
+    del quantum_solvers
+
+    # signal_f, signal = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation, True)
+    # signal_f_init = Filters.get_low_pass_pulses(initial_pulses, 1.64e-9, cut_off_time, granulation, False)
+    # bloch_plotter.plot(plot_type="evolution", pulses_final=pulses, init_state=initial_state, target_state=ideal_state)
     # time.sleep(1)
-    # bloch_plotter.plot(plot_type="evolution", pulses_final=signal_f_init, init_state=initial_state,
-    #                    target_state=ideal_state,
+    # bloch_plotter.plot(plot_type="evolution", pulses_final=signal_f, init_state=initial_state, target_state=ideal_state,
     #                    granulation=granulation)
-    #
-    # bloch_plotter.plot(plot_type="pulses", pulses_final=pulses, pulses_init=signal_f_init)
+    # bloch_plotter.plot(plot_type="pulses", pulses_final=signal_f, pulses_init=signal_f_init)
+    # time.sleep(1)
+    # bloch_plotter.plot(plot_type="pulses", pulses_final=pulses, pulses_init=initial_pulses)
+    # target_prop, target_operator, target_state = rotation_handler.RotationHandler.get_target_state(angles,
+    #                                                                                                axes, initial_state)
+    # signal_f = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation, False)
+    # fid = get_fidelity(signal_f, granulation, initial_state, target_operator)
+    # print("FILTERED SIGNAL FIDELITY: ", fid, "GRANULATION:", granulation)
+    # 
+    # granulation_new = 16
+    # signal_f_new = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation_new, False)
+    # fid_new = get_fidelity(signal_f_new, granulation_new, initial_state, target_operator)
+    # fid2_new = get_fidelity(pulses, None, initial_state, target_operator)
+    # print("FILTERED SIGNAL FIDELITY: ", fid_new, "IDEAL PULSES FIDELITY:", fid2_new, "GRANULATION:", granulation_new)
+    # 
+    # granulation_new = 32
+    # signal_f_new = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation_new, False)
+    # fid_new = get_fidelity(signal_f_new, granulation_new, initial_state, target_operator)
+    # fid2_new = get_fidelity(pulses, None, initial_state, target_operator)
+    # print("FILTERED SIGNAL FIDELITY: ", fid_new, "IDEAL PULSES FIDELITY:", fid2_new, "GRANULATION:", granulation_new)
+    # 
+    # granulation_new = 128
+    # signal_f_new = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation_new, False)
+    # fid_new = get_fidelity(signal_f_new, granulation_new, initial_state, target_operator)
+    # fid2_new = get_fidelity(pulses, None, initial_state, target_operator)
+    # print("FILTERED SIGNAL FIDELITY: ", fid_new, "IDEAL PULSES FIDELITY:", fid2_new, "GRANULATION:", granulation_new)
+    # 
+    # granulation_new = 256
+    # signal_f_new = Filters.get_low_pass_pulses(pulses, 1.64e-9, cut_off_time, granulation_new, False)
+    # fid_new = get_fidelity(signal_f_new, granulation_new, initial_state, target_operator)
+    # fid2_new = get_fidelity(pulses, None, initial_state, target_operator)
+    # print("FILTERED SIGNAL FIDELITY: ", fid_new, "IDEAL PULSES FIDELITY:", fid2_new, "GRANULATION:", granulation_new)
+
+
     return
 
 
 if __name__ == '__main__':
-    # quantum_solvers = solvers_manager.SolversManager()
-    process_proper_pulses(4, 0.4e-9, 0.999)
-    process_proper_pulses(8, 0.4e-9, 0.999)
-    process_proper_pulses(16, 0.4e-9, 0.999)
+    main()
+    # process_proper_pulses(4, 0.4e-9, 0.999)
+    # process_proper_pulses(8, 0.4e-9, 0.999)
+    # process_proper_pulses(16, 0.4e-9, 0.999)

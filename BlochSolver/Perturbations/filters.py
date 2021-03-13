@@ -42,3 +42,10 @@ class Filters:
             return signal_f, signal
         else:
             return signal_f
+
+    @staticmethod
+    def filter_out_signal(signal_filtered: np.array, n: int, granulation: int):
+        pulses_f = signal_filtered.reshape(n, granulation)
+        for pulse in pulses_f:
+            pulse.fill(pulse[-1])
+        return np.mean(pulses_f, axis=1)
