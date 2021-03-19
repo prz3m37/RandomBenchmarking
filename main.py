@@ -4,16 +4,7 @@ from BlochSolver.Perturbations.filters import Filters
 from BlochSolver.QuantumSolvers.rotations import rotation_handler
 from BlochSolver.QuantumSolvers.numerics import numerical_methods
 import numpy as np
-import time
 import glob
-import matplotlib.pyplot as plt
-from BlochSolver.Utils.utils import Utils
-
-
-# TODO : Third condition checking the ideal one with filtered one (convolution)
-# TODO : Additional condition which links individual level of granulated pulses,
-#  for each 32*granulation pulse
-# TODO : Run 1000 initial pulses and filter them all and look for the smoothest curve - simulate experiment.
 
 
 def get_fidelity(signal, granulation, init_state, target_operator):
@@ -163,9 +154,5 @@ def main():
 
     return
 
-
 if __name__ == '__main__':
     main()
-    # process_proper_pulses(4, 0.4e-9, 0.999)
-    # process_proper_pulses(8, 0.4e-9, 0.999)
-    # process_proper_pulses(16, 0.4e-9, 0.999)

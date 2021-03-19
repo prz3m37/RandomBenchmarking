@@ -2,7 +2,6 @@
 *.db
 *.jpg
 *.bmp
-*.txt
 *.mat
 *.png
 *.dat
