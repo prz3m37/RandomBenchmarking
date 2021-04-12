@@ -26,24 +26,16 @@ class SettingsInitializer:
         self.__set_pulse_ranges()
         return
 
-    # def __save_numerical_settings(self):
-    #     utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__num_settings))
-    #     return
-    #
-    # def __save_physical_params(self):
-    #     utils.Utils.save_log("[INFO]: Simulation run for: " + json.dumps(self.__settings))
-    #     return
-
     def __set_pulse_ranges(self):
         if self.__num_settings["e_max"] is None:
-            self.__num_settings["e_max"] = 0.1
+            self.__num_settings["e_max"] = 0.004
         if self.__num_settings["e_min"] is None:
             self.__num_settings["e_min"] = 0.
         return
 
     def __set_init_learning_rate(self):
         if self.__num_settings["learning_rate"] is None:
-            self.__num_settings["learning_rate"] = 10.
+            self.__num_settings["learning_rate"] = 1.
         return
 
     def __set_learning_incrementation(self):

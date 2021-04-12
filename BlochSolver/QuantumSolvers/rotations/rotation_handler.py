@@ -27,15 +27,6 @@ class RotationHandler:
     def __get_pulse_arg(cls, pulse_detuning: float):
         return (2 * s.settings["time_tc"] ** 2 - pulse_detuning ** 2) / pulse_detuning
 
-    # TODO: Apply Daniel filter function
-    @classmethod
-    def __filter_pulses(cls, pulse_prime: float):
-        return
-
-    @classmethod
-    def apply_filter_to_pulse(cls, guess_pulse: np.array):
-        return np.array((cls.__filter_pulses(pulse) for pulse in guess_pulse), np.float)
-
     @classmethod
     def __get_rotation_operator(cls, pulse: float):
         j_f = cls.get_pulse_detuning(pulse)

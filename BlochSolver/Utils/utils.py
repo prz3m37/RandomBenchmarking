@@ -52,52 +52,13 @@ class Utils:
         settings.numerical_settings["identities"] = cls.cfg_parser.numerical_params["identities"]
         return
 
-    # @classmethod
-    # def save_log(cls, message: str):
-    #     msg = "[" + cls.__get_current_time() + "]" + message + "\n"
-    #     cls.log_file.write(msg)
-    #     return
-
-    # @classmethod
-    # def save_result(cls, result: str):
-    #     res = "[" + cls.__get_current_time() + "] " + result + "\n"
-    #     cls.results_file.write(res)
-    #     return
-
     @classmethod
     def get_png_name(cls, name: str):
-        return cls.__result_file_path + str(cls.__get_current_time()) + "_" + name
+        return cls.__result_file_path + str(cls.__get_current_time()) + "_" + name + ".pdf"
 
     @staticmethod
     def __get_current_time():
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # @classmethod
-    # def __create_results_file(cls, solver_type: str):
-    #     results_file_name = cls.__result_file_path + \
-    #                         str(cls.__get_current_time()) + "_" + solver_type + "_BS_RESULTS_FILE.txt"
-    #     cls.results_file = open(results_file_name, "a")
-    #     cls.save_log("[INFO]: Results file created")
-    #     return
-
-    # @classmethod
-    # def __close_results_file(cls):
-    #     cls.save_log("[INFO]: Results file closed")
-    #     cls.results_file.close()
-    #     return
-
-    # @classmethod
-    # def __create_log_file(cls, solver_type: str):
-    #     log_file_name = cls.__result_file_path + \
-    #                     str(cls.__get_current_time()) + "_" + solver_type + "_BS_LOG_FILE.txt"
-    #     cls.log_file = open(log_file_name, "a")
-    #     return
-
-    # @classmethod
-    # def __close_log_file(cls):
-    #     cls.save_log("[INFO]: Log file closed")
-    #     cls.log_file.close()
-    #     return
 
     @classmethod
     def __create_results_dir(cls):

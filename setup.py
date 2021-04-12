@@ -3,5 +3,11 @@
 from distutils.core import setup
 from Cython.Build import cythonize
 import numpy
+import glob
 
-setup(ext_modules=cythonize("./BlochSolver/CBlochSolver/CPerturbations/filters.pyx",  language_level=3), include_dirs=[numpy.get_include()])
+#add method to find all pyx files in all folders
+def get_cython_modules():
+    return
+
+setup(ext_modules=cythonize("./BlochSolver/CBlochSolver/CQuantumSolvers/c_rotations/rotation_handler.pyx", 
+ language_level=3), include_dirs=[numpy.get_include()])

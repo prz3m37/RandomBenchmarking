@@ -67,20 +67,17 @@ class BlochPlotter:
         plt.title("Initial pulses")
         plt.ylabel("\u03B5 eV")
         sns.barplot(y=pulses_init, x=x_axis, edgecolor='black', color="steelblue")
-        plt.xticks(rotation=45)
 
         plt.subplot(312)
         plt.title("Final pulses")
         plt.ylabel("\u03B5 eV")
         sns.barplot(y=pulses_final, x=x_axis, edgecolor='black', color="green")
-        plt.xticks(rotation=45)
 
         plt.subplot(313)
         plt.title("Pulses difference")
         plt.ylabel("\u0394 \u03B5 eV")
         plt.xlabel("steps [N]")
         sns.barplot(y=diff, x=x_axis, edgecolor='black', color="darkred")
-        plt.xticks(rotation=45)
         plt.savefig(Utils.get_png_name("PULSE_DIFF"))
         plt.close()
         return
@@ -96,15 +93,13 @@ class BlochPlotter:
         plt.title("Initial signal")
         plt.ylabel("\u03B5 eV")
         plt.plot(time, signal, "--o", color="steelblue")
-        plt.xticks()
 
         plt.subplot(212)
         plt.title("Filtered signal")
         plt.ylabel("\u03B5 eV")
         plt.plot(time, signal_filtered, "--o", color="green")
-        plt.xticks()
-        # plt.savefig(Utils.get_png_name("PULSE_FILTER"))
-        plt.show()
+        plt.savefig(Utils.get_png_name("PULSE_FILTER"))
+        plt.close()
         return
 
     @staticmethod

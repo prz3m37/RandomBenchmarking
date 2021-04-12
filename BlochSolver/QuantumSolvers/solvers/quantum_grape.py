@@ -86,6 +86,8 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
         self._operators.adopt_operators(n, initial_state, ideal_state, target_operator)
         iteration = 0
         while True:
+            namef =  path + "fidelity_" + str(iteration) + '.npy'
+            namep =  path + "pulses_" + str(iteration) + '.npy'
             self._get_order(self._pulses)
             fwd_propagators, bwd_propagators = self._prop.evaluate_propagators(self._inv_pulses)
             self._j = self.get_pulse_detunings(self._pulses)
@@ -98,6 +100,7 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_fidelity(self._inv_pulses)
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_propagator_fidelity(self._inv_pulses)
+
             if self._sc.check_unitary_stop_condition(fidelity_status, prop_fidelity_status, self._pulses):
                 print("  **** FINAL FIDELITY", iteration, "th :", fidelity,
                       "FINAL OPERATOR FIDELITY: ", prop_fidelity)
@@ -106,9 +109,10 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 print(" **** STOP CONDITION REACHED")
                 break
             else:
-                # print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
+                print(" **** FIDELITY", iteration, "th :", fidelity, "OPERATOR FIDELITY: ", prop_fidelity)
                 self._update_pulse()
                 iteration += 1
+
         return ideal_state, self._return
 
     def _get_lr_grape(self, initial_pulses: np.array, angles: np.array, axes: np.array, initial_state: np.array):
@@ -205,7 +209,6 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
 
             fidelity_status, fidelity = self._operators.evaluate_effective_fidelity(self._inv_pulses)
-            # self._pulses = Filters.filter_out_signal(self._pulses, n, granulation)
 
             if self._sc.check_stop_condition(fidelity_status, self._pulses):
                 print(" **** FINAL FIDELITY", iteration, ":", fidelity)
@@ -215,13 +218,16 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
                 break
             else:
                 print(" **** FIDELITY", iteration, "th :", fidelity)
-                print(self._pulses.max(), self._pulses.min())
+                self._pulses = Filters.filter_out_signal(self._pulses, n, granulation)
                 self._update_pulse()
+                self._pulses = Filters.get_low_pass_pulses(self._pulses, self._settings["pulse_time"],
+                                                           cut_off_time, granulation)
                 iteration += 1
         return ideal_state, self._return
 
     def _get_perturbation_unitary_grape(self, initial_pulses: np.array, angles: np.array, axes: np.array,
                                         initial_state: np.array, cut_off_time: float, granulation: int):
+
         n = nm.NumericalMethods.n_shape = initial_pulses.shape[0]
         target_prop, target_operator, ideal_state = self.get_target_state(angles, axes, initial_state)
         self._pulses = Filters.get_low_pass_pulses(initial_pulses, self._settings["pulse_time"],
@@ -247,12 +253,12 @@ class QuantumGrape(rh.RotationHandler, nm.NumericalMethods):
             self._get_order(self._pulses)
             fidelity_status, fidelity = self._operators.evaluate_effective_fidelity(self._inv_pulses)
             prop_fidelity_status, prop_fidelity = self._prop.evaluate_effective_propagator_fidelity(self._inv_pulses)
-
             if self._sc.check_unitary_stop_condition(fidelity_status, prop_fidelity_status, self._pulses):
                 print("  **** FINAL FIDELITY", iteration, "th :", fidelity,
                       "FINAL OPERATOR FIDELITY: ", prop_fidelity)
                 self._return = Filters.filter_out_signal(self._pulses, n, granulation)
                 break
+
             elif self._sc.check_iteration_condition(iteration):
                 print(" **** STOP CONDITION REACHED")
                 break
