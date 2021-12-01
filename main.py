@@ -21,7 +21,7 @@ def main():
 
     angles = [np.pi / 2]
     axes = ["x"]
-    initial_state =np.array([1, 0])
+    initial_state =np.array([1,0])
     granulation = 8
     cut_off_time = 0.4e-9
 
@@ -39,7 +39,7 @@ def main():
 
 
     bloch_plotter.plot(plot_type="pulses", pulses_final=pulses, pulses_init=initial_pulses)
-    bloch_plotter.plot(plot_type="evolution", pulses_final=pulses, init_state=ideal_state, target_state=ideal_state)
+    bloch_plotter.plot(plot_type="evolution", pulses_final=pulses, init_state=initial_state, target_state=ideal_state)
 
     # Here before plotting you have to put filtered signals because plotting function with granulation option will calculate the effective pulses
     # bloch_plotter.plot(plot_type="evolution", pulses_final=pulses, init_state=ideal_state, granulation=granulation, target_state=ideal_state)

@@ -44,7 +44,7 @@ class BlochPlotter:
         ax.scatter(x_init, y_init, z_init, color="blue", s=40, label='Init state')
         ax.scatter(x_target, y_target, z_target, color="green", s=40, label='Final target point')
         ax.scatter(x_cor[-1], y_cor[-1], z_cor[-1], color="black", s=40, label='Last pulse state')
-        ax.plot3D(x_cor, y_cor, z_cor, "--D", color='red', label="Pulse evolution")
+        ax.plot3D(x_cor, y_cor, z_cor, "--D", color='red', markersize=3, label="Pulse evolution")
         ax.set_xlabel('$X$', fontsize=20)
         ax.set_ylabel('$Y$', fontsize=20)
         ax.set_zlabel(r'$Z$', fontsize=20)

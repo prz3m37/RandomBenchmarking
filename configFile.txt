@@ -8,11 +8,11 @@ number_of_iterations=1000
 learning_incrementation=2
 learning_decrementation=0.5
 learning_rate=1
-operator_error=1.9999
-error=0.9999
+operator_error=1.99999
+error=0.99999
 e_min=0.
 e_max=0.01
-identities=4
+identities=0
 ############## TYPES INFO ##############
 magnetic_filed[float]
 time_tc[float]
